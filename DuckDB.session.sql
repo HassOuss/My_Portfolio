@@ -119,4 +119,3 @@ LIMIT 1000;
 
 
 
-    SELECT * FROM read_csv_auto('/Users/hass.ouss/Documents/Energy_Import.csv');
