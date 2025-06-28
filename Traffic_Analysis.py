@@ -9,7 +9,7 @@ st.title("Chicago Traffic Crashes Dashboard")
 st.markdown("Analyze patterns in crashes by control devices, lighting, weather, and more.")
 
 # === File Uploader ===
-uploaded_file = st.file_uploader("/Users/hass.ouss/Documents/Traffic_Crashes_-_Crashes.csv", type="csv")
+uploaded_file = st.file_uploader("/Users/hass.ouss/Documents/Traffic_Crashes_-_Crashes 1.csv", type="csv")
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
