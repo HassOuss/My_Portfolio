@@ -5,132 +5,83 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 
-df = pd.read_csv('/Users/hass.ouss/Documents/Traffic_Crashes_-_Crashes.csv')
-df.T
+st.title("Chicago Traffic Crashes Dashboard")
+st.markdown("Analyze patterns in crashes by control devices, lighting, weather, and more.")
 
-df.nunique()
+# === File Uploader ===
+uploaded_file = st.file_uploader("/Users/hass.ouss/Documents/Traffic_Crashes_-_Crashes.csv", type="csv")
 
-df.info()
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
 
-df.describe().T
+    # Preview Data
+    st.subheader("Raw Data Preview")
+    st.dataframe(df.head())
 
-# Print the shape of the DataFrame to show the number of rows and columns
-print(df.shape)
+    # Data Preprocessing
+    selected_columns = [
+        'CRASH_RECORD_ID', 'POSTED_SPEED_LIMIT', 'TRAFFIC_CONTROL_DEVICE',
+        'DEVICE_CONDITION', 'WEATHER_CONDITION', 'LIGHTING_CONDITION', 'FIRST_CRASH_TYPE',
+        'TRAFFICWAY_TYPE', 'ALIGNMENT', 'ROADWAY_SURFACE_COND',
+        'ROAD_DEFECT', 'REPORT_TYPE', 'CRASH_TYPE', 'NOT_RIGHT_OF_WAY_I', 'HIT_AND_RUN_I', 'DAMAGE',
+        'PRIM_CONTRIBUTORY_CAUSE', 'SEC_CONTRIBUTORY_CAUSE', 'STREET_DIRECTION', 'STREET_NAME',
+        'BEAT_OF_OCCURRENCE', 'NUM_UNITS', 'MOST_SEVERE_INJURY', 'INJURIES_TOTAL',
+        'INJURIES_FATAL', 'INJURIES_INCAPACITATING', 'INJURIES_NON_INCAPACITATING',
+        'INJURIES_REPORTED_NOT_EVIDENT', 'INJURIES_NO_INDICATION', 'INJURIES_UNKNOWN',
+        'CRASH_HOUR', 'CRASH_DAY_OF_WEEK', 'CRASH_MONTH', 'LATITUDE', 'LONGITUDE', 'LOCATION'
+    ]
 
-# find missing values.
-# The dataset has 919504 rows and we can see that some variable have more than 900000 missing values. 
-# I will remove those variable   
-df.isnull().sum()[df.isnull().sum()>0].sort_values(ascending=False)
+    df = df[selected_columns].copy()
 
-# Display a random sample of 5 rows of the DataFrame, transposed for better visibility
-df.sample(5).T
+    # === TRAFFIC CONTROL DEVICE PLOT ===
+    st.subheader("Traffic Control Devices")
+    fig1, ax1 = plt.subplots(figsize=(14, 7))
+    df['TRAFFIC_CONTROL_DEVICE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='maroon', ax=ax1)
+    ax1.set_xlabel('Control device counts', fontsize=12)
+    ax1.set_ylabel('Device', fontsize=12)
+    st.pyplot(fig1)
 
-# Columns names
-df.columns
+    # === DEVICE CONDITION PLOT ===
+    st.subheader("Device Condition")
+    fig2, ax2 = plt.subplots(figsize=(14, 7))
+    df['DEVICE_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='green', ax=ax2)
+    ax2.set_xlabel('Device condition counts', fontsize=12)
+    ax2.set_ylabel('Condition', fontsize=12)
+    st.pyplot(fig2)
 
-df = df [['CRASH_RECORD_ID',
-    #'CRASH_DATE_EST_I', 'CRASH_DATE',
-       'POSTED_SPEED_LIMIT', 'TRAFFIC_CONTROL_DEVICE', 'DEVICE_CONDITION',
-       'WEATHER_CONDITION', 'LIGHTING_CONDITION', 'FIRST_CRASH_TYPE',
-       'TRAFFICWAY_TYPE', 
-       #'LANE_CNT', 'INTERSECTION_RELATED_I',
-       'ALIGNMENT', 'ROADWAY_SURFACE_COND',
-       'ROAD_DEFECT', 'REPORT_TYPE', 'CRASH_TYPE', 
-       'NOT_RIGHT_OF_WAY_I', 'HIT_AND_RUN_I', 'DAMAGE', 
-       #'DATE_POLICE_NOTIFIED',
-       'PRIM_CONTRIBUTORY_CAUSE', 'SEC_CONTRIBUTORY_CAUSE', 
-       #'STREET_NO',
-       'STREET_DIRECTION', 'STREET_NAME', 'BEAT_OF_OCCURRENCE',
-       #'PHOTOS_TAKEN_I', 'STATEMENTS_TAKEN_I', 'DOORING_I', 'WORK_ZONE_I',
-       #'WORK_ZONE_TYPE', 'WORKERS_PRESENT_I', 
-       'NUM_UNITS',
-       'MOST_SEVERE_INJURY', 'INJURIES_TOTAL', 'INJURIES_FATAL',
-       'INJURIES_INCAPACITATING', 'INJURIES_NON_INCAPACITATING',
-       'INJURIES_REPORTED_NOT_EVIDENT', 'INJURIES_NO_INDICATION',
-       'INJURIES_UNKNOWN', 'CRASH_HOUR', 'CRASH_DAY_OF_WEEK', 'CRASH_MONTH',
-       'LATITUDE', 'LONGITUDE', 'LOCATION'] ].copy()
+    # === WEATHER CONDITION PLOT ===
+    st.subheader("Weather Condition")
+    fig3, ax3 = plt.subplots(figsize=(14, 7))
+    df['WEATHER_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='blue', ax=ax3)
+    ax3.set_xlabel('Weather condition counts', fontsize=12)
+    ax3.set_ylabel('Condition', fontsize=12)
+    st.pyplot(fig3)
 
-df.head().T
+    # === LIGHTING CONDITION BAR PLOT ===
+    st.subheader("Lighting Condition (Bar Plot)")
+    fig4, ax4 = plt.subplots(figsize=(14, 7))
+    df['LIGHTING_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='red', ax=ax4)
+    ax4.set_xlabel('Lighting condition counts', fontsize=12)
+    ax4.set_ylabel('Condition', fontsize=12)
+    st.pyplot(fig4)
 
-# Data Visualization
-#Traffic Control
-df['TRAFFIC_CONTROL_DEVICE'].value_counts() \
-               .sort_values(ascending=True) \
-               .plot(kind    ='barh',
-                     figsize =(14,7),
-                     color   ='Maroon')
+    # === LIGHTING CONDITION PIE CHART ===
+    st.subheader("Lighting Condition (Pie Chart)")
+    light = df.groupby('LIGHTING_CONDITION').size().reset_index(name='counts')
+    fig5, ax5 = plt.subplots()
+    ax5.pie(light['counts'], labels=None, autopct='%1.1f%%')
+    ax5.axis('equal')
+    ax5.set_title('Lighting Condition')
+    ax5.legend(light['LIGHTING_CONDITION'], title="Lighting Types", loc="center left", bbox_to_anchor=(1, 0.5))
+    st.pyplot(fig5)
 
-plt.xlabel('Control divice counts', fontsize=16, color='Black')
-plt.ylabel('Divices ', fontsize=16, color='Black')
-plt.xticks(fontsize=12, color='Black')
-plt.yticks(fontsize=12, color='Black')
-plt.title('Traffic control devices', fontsize=20)
-plt.show()
+    # === FIRST CRASH TYPE ===
+    st.subheader("First Crash Type")
+    fig6, ax6 = plt.subplots(figsize=(14, 7))
+    df['FIRST_CRASH_TYPE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='purple', ax=ax6)
+    ax6.set_xlabel('First crash counts', fontsize=12)
+    ax6.set_ylabel('Crash Type', fontsize=12)
+    st.pyplot(fig6)
 
-#Device Condition
-df['DEVICE_CONDITION'].value_counts() \
-               .sort_values(ascending=True) \
-               .plot(kind    ='barh',
-                     figsize =(14,7),
-                     color   ='Green')
-
-plt.xlabel('Device condition counts', fontsize=16, color='Black')
-plt.ylabel('Condition', fontsize=16, color='Black')
-plt.xticks(fontsize=12, color='Black')
-plt.yticks(fontsize=12, color='Black')
-plt.title('Device condition', fontsize=20)
-plt.show()
-
-# Weather Condition
-df['WEATHER_CONDITION'].value_counts() \
-               .sort_values(ascending=True) \
-               .plot(kind    ='barh',
-                     figsize =(14,7),
-                     color   ='Blue')
-
-plt.xlabel('Weather condition counts', fontsize=16, color='Black')
-plt.ylabel('Condition', fontsize=16, color='Black')
-plt.xticks(fontsize=12, color='Black')
-plt.yticks(fontsize=12, color='Black')
-plt.title('Weather Condition', fontsize=20)
-plt.show()
-
-# Lighting Condition
-df['LIGHTING_CONDITION'].value_counts() \
-               .sort_values(ascending=True) \
-               .plot(kind    ='barh',
-                     figsize =(14,7),
-                     color   ='Red')
-
-plt.xlabel('Lighting condition counts', fontsize=16, color='Black')
-plt.ylabel('Divices ', fontsize=16, color='Black')
-plt.xticks(fontsize=12, color='Black')
-plt.yticks(fontsize=12, color='Black')
-plt.title('Lighting condition', fontsize=20)
-plt.show()
-
-#Lighting Condition
-light_cond = df.groupby('LIGHTING_CONDITION')
-light = light_cond.size().reset_index(name='light_cond')
-
-plt.pie(light['light_cond'], labels=None,
-        autopct='%1.1f%%')
-
-plt.axis('equal')
-plt.title('Lighting condition', fontsize=18)
-plt.legend(light['LIGHTING_CONDITION'])
-plt.show()
-
-#First crash Type
-df['FIRST_CRASH_TYPE'].value_counts() \
-               .sort_values(ascending=True) \
-               .plot(kind    ='barh',
-                     figsize =(14,7),
-                     color   ='Purple')
-
-plt.xlabel('First crash counts', fontsize=16, color='Black')
-plt.ylabel('Crash', fontsize=16, color='Black')
-plt.xticks(fontsize=12, color='Black')
-plt.yticks(fontsize=12, color='Black')
-plt.title('Traffic control devices', fontsize=20)
-plt.show()
+else:
+    st.info("Please upload your Traffic Crashes CSV file to begin.")
