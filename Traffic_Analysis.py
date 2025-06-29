@@ -44,9 +44,9 @@ else:
 #df = df[selected_columns]#
 
 # Optional: show missing columns as a warning
-missing_columns = [col for col in expected_columns if col not in df.columns]
-if missing_columns:
-    st.warning(f"Missing columns in uploaded data: {missing_columns}")
+#missing_columns = [col for col in expected_columns if col not in df.columns]
+#if missing_columns:
+ #   st.warning(f"Missing columns in uploaded data: {missing_columns}")#
     
     df = df[selected_columns].copy()
 
