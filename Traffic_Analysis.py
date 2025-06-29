@@ -39,8 +39,8 @@ selected_columns = [
     'INJURIES_TOTAL', 'INJURIES_FATAL', 'INJURIES_INCAPACITATING',
     'INJURIES_NON_INCAPACITATING', 'INJURIES_REPORTED_NOT_EVIDENT',
     'INJURIES_NO_INDICATION', 'INJURIES_UNKNOWN', 'CRASH_HOUR',
-    'CRASH_DAY_OF_WEEK', 'CRASH_MONTH', 'LATITUDE', 'LONGITUDE', 'LOCATION'
-]
+    'CRASH_DAY_OF_WEEK', 'CRASH_MONTH', 'LATITUDE', 'LONGITUDE', 'LOCATION']
+
 
 # Filter to only existing columns
 existing_columns = [col for col in selected_columns if col in df.columns]
