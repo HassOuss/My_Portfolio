@@ -38,7 +38,16 @@ else:
        'CRASH_DAY_OF_WEEK', 'CRASH_MONTH', 'LATITUDE', 'LONGITUDE',
        'LOCATION'
     ]
+####
+# Only keep columns that actually exist
+existing_columns = [col for col in selected_columns if col in df.columns]
+#df = df[selected_columns]#
 
+# Optional: show missing columns as a warning
+missing_columns = [col for col in expected_columns if col not in df.columns]
+if missing_columns:
+    st.warning(f"Missing columns in uploaded data: {missing_columns}")
+    
     df = df[selected_columns].copy()
 
     # === TRAFFIC CONTROL DEVICE PLOT ===
