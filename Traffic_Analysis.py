@@ -40,8 +40,8 @@ else:
     ]
 ####
 # Only keep columns that actually exist
-#existing_columns = [col for col in selected_columns if col in df.columns]
-#df = df[selected_columns]#
+existing_columns = [col for col in selected_columns if col in df.columns]
+#df = df[selected_columns]
 
 df = df[selected_columns].copy()
 # Optional: show missing columns as a warning
