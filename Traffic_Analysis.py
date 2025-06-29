@@ -15,7 +15,7 @@ if uploaded_file:
     df = pd.read_csv(uploaded_file)
     st.success("Using uploaded file")
 else:
-    df = pd.read_csv("traffic_Crashes.csv")
+    df = pd.read_csv("Traffic_Crashes.csv")
     st.warning("No file uploaded, using default sample data")
 
 
