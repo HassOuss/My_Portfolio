@@ -52,37 +52,50 @@ if missing_columns:
 
 # === VISUALIZATIONS ===
 
-# TRAFFIC CONTROL DEVICE PLOT
-st.subheader("Traffic Control Devices")
-fig1, ax1 = plt.subplots(figsize=(14, 7))
-df['TRAFFIC_CONTROL_DEVICE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='maroon', ax=ax1)
-ax1.set_xlabel('Control device counts', fontsize=12)
-ax1.set_ylabel('Device', fontsize=12)
-st.pyplot(fig1)
+st.subheader("Select a Plot to Display")
 
-# DEVICE CONDITION PLOT
-st.subheader("Device Condition")
-fig2, ax2 = plt.subplots(figsize=(14, 7))
-df['DEVICE_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='green', ax=ax2)
-ax2.set_xlabel('Device condition counts', fontsize=12)
-ax2.set_ylabel('Condition', fontsize=12)
-st.pyplot(fig2)
+plot_option = st.selectbox(
+    "Choose one:",
+    [
+        "Traffic Control Devices",
+        "Device Condition",
+        "Weather Condition",
+        "Lighting Condition"
+    ]
+)
 
-# WEATHER CONDITION PLOT
-st.subheader("Weather Condition")
-fig3, ax3 = plt.subplots(figsize=(14, 7))
-df['WEATHER_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='blue', ax=ax3)
-ax3.set_xlabel('Weather condition counts', fontsize=12)
-ax3.set_ylabel('Condition', fontsize=12)
-st.pyplot(fig3)
+if plot_option == "Traffic Control Devices":
+    st.subheader("Traffic Control Devices")
+    fig, ax = plt.subplots(figsize=(14, 7))
+    df['TRAFFIC_CONTROL_DEVICE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='maroon', ax=ax)
+    ax.set_xlabel('Control device counts', fontsize=12)
+    ax.set_ylabel('Device', fontsize=12)
+    st.pyplot(fig)
 
-# LIGHTING CONDITION BAR PLOT
-st.subheader("Lighting Condition (Bar Plot)")
-fig4, ax4 = plt.subplots(figsize=(14, 7))
-df['LIGHTING_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='red', ax=ax4)
-ax4.set_xlabel('Lighting condition counts', fontsize=12)
-ax4.set_ylabel('Condition', fontsize=12)
-st.pyplot(fig4)
+elif plot_option == "Device Condition":
+    st.subheader("Device Condition")
+    fig, ax = plt.subplots(figsize=(14, 7))
+    df['DEVICE_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='green', ax=ax)
+    ax.set_xlabel('Device condition counts', fontsize=12)
+    ax.set_ylabel('Condition', fontsize=12)
+    st.pyplot(fig)
+
+elif plot_option == "Weather Condition":
+    st.subheader("Weather Condition")
+    fig, ax = plt.subplots(figsize=(14, 7))
+    df['WEATHER_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='blue', ax=ax)
+    ax.set_xlabel('Weather condition counts', fontsize=12)
+    ax.set_ylabel('Condition', fontsize=12)
+    st.pyplot(fig)
+
+elif plot_option == "Lighting Condition":
+    st.subheader("Lighting Condition")
+    fig, ax = plt.subplots(figsize=(14, 7))
+    df['LIGHTING_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='red', ax=ax)
+    ax.set_xlabel('Lighting condition counts', fontsize=12)
+    ax.set_ylabel('Condition', fontsize=12)
+    st.pyplot(fig)
+
 
 # LIGHTING CONDITION PIE CHART
 st.subheader("Lighting Condition (Pie Chart)")
