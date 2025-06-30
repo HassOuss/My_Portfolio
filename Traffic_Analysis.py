@@ -60,7 +60,9 @@ plot_option = st.selectbox(
         "Traffic Control Devices",
         "Device Condition",
         "Weather Condition",
-        "Lighting Condition"
+        "Lighting Condition (Bar)",
+        "Lighting Condition (Pie)",
+        "First Crash Type"
     ]
 )
 
@@ -88,29 +90,28 @@ elif plot_option == "Weather Condition":
     ax.set_ylabel('Condition', fontsize=12)
     st.pyplot(fig)
 
-elif plot_option == "Lighting Condition":
-    st.subheader("Lighting Condition")
+elif plot_option == "Lighting Condition (Bar)":
+    st.subheader("Lighting Condition (Bar Plot)")
     fig, ax = plt.subplots(figsize=(14, 7))
     df['LIGHTING_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='red', ax=ax)
     ax.set_xlabel('Lighting condition counts', fontsize=12)
     ax.set_ylabel('Condition', fontsize=12)
     st.pyplot(fig)
 
+elif plot_option == "Lighting Condition (Pie)":
+    st.subheader("Lighting Condition (Pie Chart)")
+    light = df.groupby('LIGHTING_CONDITION').size().reset_index(name='counts')
+    fig, ax = plt.subplots()
+    ax.pie(light['counts'], labels=None, autopct='%1.1f%%')
+    ax.axis('equal')
+    ax.set_title('Lighting Condition')
+    ax.legend(light['LIGHTING_CONDITION'], title="Lighting Types", loc="center left", bbox_to_anchor=(1, 0.5))
+    st.pyplot(fig)
 
-# LIGHTING CONDITION PIE CHART
-st.subheader("Lighting Condition (Pie Chart)")
-light = df.groupby('LIGHTING_CONDITION').size().reset_index(name='counts')
-fig5, ax5 = plt.subplots()
-ax5.pie(light['counts'], labels=None, autopct='%1.1f%%')
-ax5.axis('equal')
-ax5.set_title('Lighting Condition')
-ax5.legend(light['LIGHTING_CONDITION'], title="Lighting Types", loc="center left", bbox_to_anchor=(1, 0.5))
-st.pyplot(fig5)
-
-# FIRST CRASH TYPE
-st.subheader("First Crash Type")
-fig6, ax6 = plt.subplots(figsize=(14, 7))
-df['FIRST_CRASH_TYPE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='purple', ax=ax6)
-ax6.set_xlabel('First crash counts', fontsize=12)
-ax6.set_ylabel('Crash Type', fontsize=12)
-st.pyplot(fig6)
+elif plot_option == "First Crash Type":
+    st.subheader("First Crash Type")
+    fig, ax = plt.subplots(figsize=(14, 7))
+    df['FIRST_CRASH_TYPE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='purple', ax=ax)
+    ax.set_xlabel('First crash counts', fontsize=12)
+    ax.set_ylabel('Crash Type', fontsize=12)
+    st.pyplot(fig)
