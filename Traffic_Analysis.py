@@ -59,7 +59,11 @@ bar_plot = st.selectbox(
         "Traffic Control Devices",
         "Device Condition",
         "Weather Condition",
-        "Lighting Condition (Bar)"
+        "Lighting Condition",
+        "Trafficway Type",
+        "Alignment",
+        "Roadway Surface Condition",
+        "First Crash Type"
     ]
 )
 
