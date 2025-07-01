@@ -154,20 +154,11 @@ st.pyplot(fig6)
 st.subheader("Damage (Pie Chart)")
 Damage = df.groupby('DAMAGE').size().reset_index(name='Dam_Count')
 fig7, ax7 = plt.subplots()
-ax7.pie(crash['Damage_Count'], labels=None,autopct='%1.1f%%')
+ax7.pie(Damage['Damage_Count'], labels=None,autopct='%1.1f%%')
 ax7.axis('equal')
 ax7.set_title('Damage')
 ax7.legend(Damage['Damage'], title="Damage", loc="center left", bbox_to_anchor=(1, 0.5))
 st.pyplot(fig7)
-
-
-# FIRST CRASH TYPE
-st.subheader("First Crash Type")
-fig6, ax6 = plt.subplots(figsize=(14, 7))
-df['FIRST_CRASH_TYPE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='purple', ax=ax6)
-ax6.set_xlabel('First crash counts', fontsize=12)
-ax6.set_ylabel('Crash Type', fontsize=12)
-st.pyplot(fig6)
 
 st.subheader("Crash Trends Over Time")
 # TOTAL CRASHES BY HOUR
