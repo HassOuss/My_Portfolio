@@ -81,7 +81,7 @@ elif bar_plot == "Device Condition":
    ax.set_xlabel('Device condition counts', fontsize=12)
    ax.set_ylabel('Condition', fontsize=12)
    st.pyplot(fig)
-elif plot_option == "Weather Condition":
+elif bar_plot == "Weather Condition":
    st.subheader("Weather Condition")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['WEATHER_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='blue', ax=ax)
@@ -89,7 +89,7 @@ elif plot_option == "Weather Condition":
    ax.set_ylabel('Condition', fontsize=12)
    st.pyplot(fig)
 
-elif plot_option == "Lighting Condition":
+elif bar_plot == "Lighting Condition":
    st.subheader("Lighting Condition (Bar Plot)")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['LIGHTING_CONDITION'].value_counts().sort_values(ascending=True).plot(kind='barh', color='red', ax=ax)
@@ -97,7 +97,7 @@ elif plot_option == "Lighting Condition":
    ax.set_ylabel('Condition', fontsize=12)
    st.pyplot(fig)
 
-elif plot_option == "Trafficway Type":
+elif bar_plot == "Trafficway Type":
    st.subheader("Trafficway Type (Bar Plot)")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['TRAFFICWAY_TYPE'].value_counts().sort_values(ascending=True).plot(kind='barh', color ='Orange', ax=ax)
@@ -105,7 +105,7 @@ elif plot_option == "Trafficway Type":
    ax.set_ylabel('Trafficway', fontsize=12)
    st.pyplot(fig)
 
-elif plot_option == "Alignment":
+elif bar_plot == "Alignment":
    st.subheader("Alignment Type (Bar Plot)")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['ALIGNMENT'].value_counts().sort_values(ascending=True).plot(kind='barh',color='Gray', ax=ax)
@@ -113,7 +113,7 @@ elif plot_option == "Alignment":
    ax.set.ylabel('Alignment', fontsize=12)
    st.pyplot(fig)
 
-elif plot_option == "Roadway Surface Condition":
+elif bar_plot == "Roadway Surface Condition":
    st.subheader("Roadway Surface Condition (Bar Plot)")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['ROADWAY_SURFACE_COND'].value_counts().sort_values(ascending=True).plot(kind='barh',color='Red', ax=ax)
@@ -121,7 +121,7 @@ elif plot_option == "Roadway Surface Condition":
    ax.set.ylabel('Roadway surface condition', fontsize=12)
    st.pyplot(fig)
 
-elif plot_option == "First Crash Type":
+elif bar_plot == "First Crash Type":
    st.subheader("First Crash Type")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['FIRST_CRASH_TYPE'].value_counts().sort_values(ascending=True).plot(kind='barh', color='purple', ax=ax)
@@ -154,7 +154,7 @@ st.pyplot(fig6)
 st.subheader("Damage (Pie Chart)")
 Damage = df.groupby('DAMAGE').size().reset_index(name='Dam_Count')
 fig7, ax7 = plt.subplots()
-ax7.pie(Damage['Damage_Count'], labels=None,autopct='%1.1f%%')
+ax7.pie(Damage['Dam_Count'], labels=None,autopct='%1.1f%%')
 ax7.axis('equal')
 ax7.set_title('Damage')
 ax7.legend(Damage['Damage'], title="Damage", loc="center left", bbox_to_anchor=(1, 0.5))
