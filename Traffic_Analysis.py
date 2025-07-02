@@ -162,6 +162,7 @@ st.pyplot(fig7)
 
 st.subheader("Crash Trends Over Time")
 # TOTAL CRASHES BY HOUR
+# Among all hours of the day, 3 PM registers the peak in crash frequency. 
 st.subheader("Total Crashes by Hour")
 
 time_hour = df.groupby('CRASH_HOUR').size().reset_index(name='Number of Crashes')
@@ -176,6 +177,7 @@ ax.set_title('Total Crashes by Hour', fontsize=16)
 st.pyplot(fig)
 
 # TOTAL CRASHES BY DAY OF THE WEEK
+# Crashes are more frequent on Saturdays than on any other day of the week.
 st.subheader("Total Crashes by Day of the Week")
 
 time_day = df.groupby('CRASH_DAY_OF_WEEK').size().reset_index(name='Number of Crashes')
@@ -184,12 +186,13 @@ daily_crashes = time_day.groupby('CRASH_DAY_OF_WEEK')['Number of Crashes'].sum()
 fig, ax = plt.subplots(figsize=(12, 6))
 ax.plot(daily_crashes['CRASH_DAY_OF_WEEK'], daily_crashes['Total Crashes'], marker='o')
 ax.grid(True)
-ax.set_xlabel('Day of the Week (0=Monday)', fontsize=14)
+ax.set_xlabel('Day of the Week (1=Monday)', fontsize=14)
 ax.set_ylabel('Number of Crashes', fontsize=14)
 ax.set_title('Total Crashes by Day of the Week', fontsize=16)
 st.pyplot(fig)
 
 # TOTAL CRASHES BY MONTH
+# Crashes are more frequent in September than in any other month of the year. 
 st.subheader("Total Crashes by Month")
 
 time_month = df.groupby('CRASH_MONTH').size().reset_index(name='Number of Crashes')
