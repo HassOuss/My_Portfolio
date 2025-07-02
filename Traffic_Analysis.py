@@ -109,16 +109,16 @@ elif bar_plot == "Alignment":
    st.subheader("Alignment Type (Bar Plot)")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['ALIGNMENT'].value_counts().sort_values(ascending=True).plot(kind='barh',color='Gray', ax=ax)
-   ax.set.xlabel('Alignment type counts', fontsize=12)
-   ax.set.ylabel('Alignment', fontsize=12)
+   ax.set_xlabel('Alignment type counts', fontsize=12)
+   ax.set_ylabel('Alignment', fontsize=12)
    st.pyplot(fig)
 
 elif bar_plot == "Roadway Surface Condition":
    st.subheader("Roadway Surface Condition (Bar Plot)")
    fig, ax = plt.subplots(figsize=(14, 7))
    df['ROADWAY_SURFACE_COND'].value_counts().sort_values(ascending=True).plot(kind='barh',color='Red', ax=ax)
-   ax.set.xlabel('Roadway surface condition counts', fontsize=12)
-   ax.set.ylabel('Roadway surface condition', fontsize=12)
+   ax.set_xlabel('Roadway surface condition counts', fontsize=12)
+   ax.set_ylabel('Roadway surface condition', fontsize=12)
    st.pyplot(fig)
 
 elif bar_plot == "First Crash Type":
@@ -157,7 +157,7 @@ fig7, ax7 = plt.subplots()
 ax7.pie(Damage['Dam_Count'], labels=None,autopct='%1.1f%%')
 ax7.axis('equal')
 ax7.set_title('Damage')
-ax7.legend(Damage['Damage'], title="Damage", loc="center left", bbox_to_anchor=(1, 0.5))
+ax7.legend(Damage['DAMAGE'], title="Damage", loc="center left", bbox_to_anchor=(1, 0.5))
 st.pyplot(fig7)
 
 st.subheader("Crash Trends Over Time")
