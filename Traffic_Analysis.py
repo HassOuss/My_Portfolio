@@ -29,6 +29,16 @@ else:
 st.subheader("Raw Data Preview")
 st.dataframe(df.head())
 
+df.nunique()
+df.info()
+df.describe().T
+# Print the shape of the DataFrame to show the number of rows and columns
+print(df.shape)
+# find missing values.
+# The dataset has 919504 rows and we can see that some variable have more than 900000 missing values. 
+# I will remove those variable   
+df.isnull().sum()[df.isnull().sum()>0].sort_values(ascending=False)
+
 # Data Preprocessing
 selected_columns = [
     'POSTED_SPEED_LIMIT', 'TRAFFIC_CONTROL_DEVICE', 'DEVICE_CONDITION',
@@ -47,10 +57,10 @@ selected_columns = [
 existing_columns = [col for col in selected_columns if col in df.columns]
 df = df[existing_columns]
 
-# Optional: show missing columns
-missing_columns = [col for col in selected_columns if col not in df.columns]
-if missing_columns:
-    st.warning(f"Missing columns in uploaded data: {missing_columns}")
+####### Optional: show missing columns
+#missing_columns = [col for col in selected_columns if col not in df.columns]
+#if missing_columns:
+#    st.warning(f"Missing columns in uploaded data: {missing_columns}")
 
 # === VISUALIZATIONS ===
 st.subheader("Bar Chart Selector")
