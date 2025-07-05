@@ -235,4 +235,4 @@ for _, row in crash_counts.iterrows():
     ).add_to(m)
 
 # Display map in Streamlit
-st_data = st_folium(m, width=900, height=700)
+st_data = st_folium(m, width=900, height=500)
