@@ -31,9 +31,11 @@ st.dataframe(df.head())
 
 df.nunique()
 df.info()
+st.subheader("Data Description")
 df.describe().T
 # Print the shape of the DataFrame to show the number of rows and columns
 print(df.shape)
+
 # find missing values.
 # The dataset has 919504 rows and we can see that some variable have more than 900000 missing values. 
 # I will remove those variable   
@@ -57,10 +59,6 @@ selected_columns = [
 existing_columns = [col for col in selected_columns if col in df.columns]
 df = df[existing_columns]
 
-####### Optional: show missing columns
-#missing_columns = [col for col in selected_columns if col not in df.columns]
-#if missing_columns:
-#    st.warning(f"Missing columns in uploaded data: {missing_columns}")
 
 # === VISUALIZATIONS ===
 st.subheader("Bar Chart Selector")
