@@ -24,7 +24,7 @@ else:
         st.error("No file uploaded and default sample data not found.")
         st.stop()
 
-# === Shared Analysis Below ===
+# === Data Overview ===
 
 st.subheader("Raw Data Preview")
 st.dataframe(df.head())
@@ -41,7 +41,7 @@ print(df.shape)
 # I will remove those variable   
 df.isnull().sum()[df.isnull().sum()>0].sort_values(ascending=False)
 
-# Data Preprocessing
+# === Data Preprocessing ===
 selected_columns = [
     'POSTED_SPEED_LIMIT', 'TRAFFIC_CONTROL_DEVICE', 'DEVICE_CONDITION',
     'WEATHER_CONDITION', 'LIGHTING_CONDITION', 'FIRST_CRASH_TYPE',
@@ -173,7 +173,7 @@ st.pyplot(fig7)
 st.subheader("Crash Trends Over Time")
 # TOTAL CRASHES BY HOUR
 st.subheader("Total Crashes by Hour")
-st.markdown("Among all hours of the day, 3 PM registers the peak in crash frequency.")
+st.markdown("-Among all hours of the day, 3 PM registers the peak in crash frequency.")
 
 time_hour = df.groupby('CRASH_HOUR').size().reset_index(name='Number of Crashes')
 hourly_crashes = time_hour.groupby('CRASH_HOUR')['Number of Crashes'].sum().reset_index(name='Total Crashes')
@@ -188,7 +188,7 @@ st.pyplot(fig)
 
 # TOTAL CRASHES BY DAY OF THE WEEK
 st.subheader("Total Crashes by Day of the Week")
-st.markdown("Crashes are more frequent on Saturdays than on any other day of the week.")
+st.markdown("-Crashes are more frequent on Saturdays than on any other day of the week.")
 
 time_day = df.groupby('CRASH_DAY_OF_WEEK').size().reset_index(name='Number of Crashes')
 daily_crashes = time_day.groupby('CRASH_DAY_OF_WEEK')['Number of Crashes'].sum().reset_index(name='Total Crashes')
@@ -203,7 +203,7 @@ st.pyplot(fig)
 
 # TOTAL CRASHES BY MONTH
 st.subheader("Total Crashes by Month")
-st.markdown("📌 **Observation:** Crashes are more frequent in **September** than in any other month of the year.")
+st.markdown("-**Observation:** Crashes are more frequent in September than in any other month of the year.")
 
 time_month = df.groupby('CRASH_MONTH').size().reset_index(name='Number of Crashes')
 monthly_crashes = time_month.groupby('CRASH_MONTH')['Number of Crashes'].sum().reset_index(name='Total Crashes')
