@@ -80,6 +80,55 @@ JOIN energy_consumption c
     ON p.month = c.month
     LIMIT 1000;
 
+--Yearly Aggregates
+SELECT 
+    SUBSTR(p.month, 1, 4) AS year,
+    SUM(p.Total_Primary_Energy_Production) AS yearly_production,
+    SUM(c.Total_Primary_Energy_Consumption) AS yearly_consumption,
+    SUM(p.Total_Primary_Energy_Production - c.Total_Primary_Energy_Consumption) AS yearly_gap
+FROM energy_production p
+JOIN energy_consumption c ON p.month = c.month
+GROUP BY year
+ORDER BY year;
+
+--Share of Each Energy Source in Total Production
+SELECT 
+    p.month,
+    (p.Fossil_Fuels_Production / p.Total_Primary_Energy_Production) * 100 AS fossil_share,
+    (p.Nuclear_Electric_Production / p.Total_Primary_Energy_Production) * 100 AS nuclear_share,
+    (p.Renewable_Energy_Production / p.Total_Primary_Energy_Production) * 100 AS renewable_share
+FROM energy_production p
+LIMIT 1000;
+
+--Moving Averages (e.g., 12-month average for smoothing)
+SELECT 
+    month,
+    AVG(Total_Primary_Energy_Production) OVER (ORDER BY month ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) AS moving_avg_production
+FROM energy_production;
+
+--Energy Dependency Ratio
+--How much of energy consumption is covered by imports:
+SELECT 
+    p.month,
+    c.Total_Primary_Energy_Consumption,
+    i."Primary Energy Imports",
+    (i."Primary Energy Imports" / c.Total_Primary_Energy_Consumption) * 100 AS import_dependency_percent
+FROM energy_production p
+JOIN energy_consumption c ON p.month = c.month
+JOIN energy_import i ON p.month = i.month;
+
+--Extreme Value Detection
+--Find months with highest/lowest renewable share:
+SELECT *
+FROM (
+    SELECT 
+        p.month,
+        (p.Renewable_Energy_Production / p.Total_Primary_Energy_Production) * 100 AS renewable_share
+    FROM energy_production p
+) 
+ORDER BY renewable_share DESC
+LIMIT 5;
+
 -- Looking at total production, total consumption and percentage 
 SELECT 
     p.month,
