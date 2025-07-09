@@ -3,6 +3,13 @@
 Welcome to my data portfolio! Below are some of the projects I've developed using Python, SQL, and Streamlit.
 
 ---
+## Energy Production & Consumption Analysis (1973–2024)
+ 
+This SQL-based project explores the United States’ energy trends from 1973 to 2024 using production, consumption, and import datasets. The analysis focuses on fossil fuels, nuclear, and renewable energy, highlighting gaps between production and usage. Key insights include:
+* A persistent deficit in fossil fuel energy.
+* Growth in renewable energy’s share of total production.
+* Use of energy imports to cover production shortfalls.
+
 
 ## 🚦 Chicago Traffic Crashes Dashboard
 
