@@ -263,7 +263,7 @@ for _, row in crash_counts.iterrows():
     ).add_to(marker_cluster)
 
 # Sidebar filter
-year_selected = st.sidebar.selectbox("Select Year", sorted(df.CRASH_DATE.dt.year.unique(), reverse=True))
+year_selected = st.sidebar.selectbox("2023", sorted(df.CRASH_DATE.dt.year.unique(), reverse=True))
 df_filtered = df[df.CRASH_DATE.dt.year == year_selected]
 
 from folium.plugins import HeatMap
