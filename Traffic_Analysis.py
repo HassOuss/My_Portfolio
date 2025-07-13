@@ -244,3 +244,29 @@ for _, row in crash_counts.iterrows():
 
 # Display map in Streamlit
 st_data = st_folium(m, width=900, height=500)
+
+######### Test
+from folium.plugins import MarkerCluster
+
+# Create a MarkerCluster object
+marker_cluster = MarkerCluster().add_to(m)
+
+# Add clustered markers
+for _, row in crash_counts.iterrows():
+    folium.CircleMarker(
+        location=[row['LATITUDE'], row['LONGITUDE']],
+        radius=min(row['count'] / 100, 10),
+        color='crimson',
+        fill=True,
+        fill_opacity=0.6,
+        popup=f"Crashes: {row['count']}"
+    ).add_to(marker_cluster)
+
+# Sidebar filter
+year_selected = st.sidebar.selectbox("Select Year", sorted(df.CRASH_DATE.dt.year.unique(), reverse=True))
+df_filtered = df[df.CRASH_DATE.dt.year == year_selected]
+
+from folium.plugins import HeatMap
+
+heat_data = crash_counts[['LATITUDE', 'LONGITUDE', 'count']].values.tolist()
+HeatMap(heat_data, radius=15).add_to(m)
