@@ -250,6 +250,11 @@ from folium.plugins import MarkerCluster
 
 # Create a MarkerCluster object
 marker_cluster = MarkerCluster().add_to(m)
+#### Conversion of date format
+import pandas as pd
+
+# Convert CRASH_DATE column to datetime
+df['CRASH_DATE'] = pd.to_datetime(df['CRASH_DATE'], format='%m/%d/%Y %I:%M:%S %p', errors='coerce')
 
 # Add clustered markers
 for _, row in crash_counts.iterrows():
@@ -262,9 +267,13 @@ for _, row in crash_counts.iterrows():
         popup=f"Crashes: {row['count']}"
     ).add_to(marker_cluster)
 
-# Sidebar filter
-year_selected = st.sidebar.selectbox("2023", sorted(df.CRASH_DATE.dt.year.unique(), reverse=True))
-df_filtered = df[df.CRASH_DATE.dt.year == year_selected]
+# Sidebar year filter
+year_selected = st.sidebar.selectbox(
+    "2023",
+    sorted(df['CRASH_DATE'].dt.year.dropna().unique(), reverse=True)
+)
+# Filtered data
+df_filtered = df[df['CRASH_DATE'].dt.year == year_selected]
 
 from folium.plugins import HeatMap
 
