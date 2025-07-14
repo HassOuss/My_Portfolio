@@ -286,3 +286,7 @@ if view_option == "Cluster Markers":
 elif view_option == "Heatmap":
     heat_data = crash_counts[['LATITUDE', 'LONGITUDE', 'count']].values.tolist()
     HeatMap(heat_data, radius=15).add_to(m)
+
+# Show map in Streamlit
+st.subheader("📍 Crash Map")
+st_folium(m, width=900, height=500)
