@@ -288,5 +288,17 @@ elif view_option == "Heatmap":
     HeatMap(heat_data, radius=15).add_to(m)
 
 # Show map in Streamlit
-st.subheader("📍 Crash Map")
-st_folium(m, width=900, height=500)
+if crash_counts.empty:
+    st.warning("No crash data available for the selected year.")
+    default_location = [41.8781, -87.6298]  # Fallback to downtown Chicago
+    m = folium.Map(location=default_location, zoom_start=11)
+else:
+    default_location = [crash_counts['LATITUDE'].mean(), crash_counts['LONGITUDE'].mean()]
+    m = folium.Map(location=default_location, zoom_start=11)
+
+    # Optional: fit map to markers
+    bounds = [
+        [crash_counts['LATITUDE'].min(), crash_counts['LONGITUDE'].min()],
+        [crash_counts['LATITUDE'].max(), crash_counts['LONGITUDE'].max()]
+    ]
+    m.fit_bounds(bounds)
