@@ -259,13 +259,22 @@ df_filtered = df[df['DATE_POLICE_NOTIFIED'].dt.year == year_selected]
 crash_counts = df_filtered.dropna(subset=["LATITUDE", "LONGITUDE"]) \
     .groupby(['LATITUDE', 'LONGITUDE']).size().reset_index(name='count')
 
-# -- Create map --
-m = folium.Map(location=[...], zoom_start=11)
+# Create map
+default_location = [crash_counts['LATITUDE'].mean(), crash_counts['LONGITUDE'].mean()]
+m = folium.Map(location=default_location, zoom_start=11)
 
 if view_option == "Cluster Markers":
-    # Add clustered markers
-elif view_option == "Heatmap":
-    # Add heatmap layer
+    marker_cluster = MarkerCluster().add_to(m)
+    for _, row in crash_counts.iterrows():
+        folium.CircleMarker(
+            location=[row['LATITUDE'], row['LONGITUDE']],
+            radius=min(row['count'] / 100, 10),
+            color='crimson',
+            fill=True,
+            fill_opacity=0.6,
+            popup=f"Crashes: {row['count']}"
+        ).add_to(marker_cluster)
 
-# -- Display map --
-st_folium(m, width=900, height=500)
+elif view_option == "Heatmap":
+    heat_data = crash_counts[['LATITUDE', 'LONGITUDE', 'count']].values.tolist()
+    HeatMap(heat_data, radius=15).add_to(m)
