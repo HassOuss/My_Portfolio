@@ -251,7 +251,13 @@ from folium.plugins import MarkerCluster
 from folium.plugins import HeatMap
 
 # -- Sidebar filters --
-year_selected = st.sidebar.selectbox(...)
+df['DATE_POLICE_NOTIFIED'] = pd.to_datetime(
+    df['DATE_POLICE_NOTIFIED'], 
+    format='%m/%d/%Y %I:%M:%S %p', 
+    errors='coerce'
+)
+
+year_selected = st.sidebar.selectbox("2023")
 view_option = st.sidebar.radio("Select Map View", ("Cluster Markers", "Heatmap"))
 
 # -- Filter and group data --
