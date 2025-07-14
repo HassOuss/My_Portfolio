@@ -257,7 +257,7 @@ df['DATE_POLICE_NOTIFIED'] = pd.to_datetime(
     errors='coerce'
 )
 
-year_selected = st.sidebar.selectbox("2023")
+year_selected = st.sidebar.selectbox("Select Year")
 view_option = st.sidebar.radio("Select Map View", ("Cluster Markers", "Heatmap"))
 
 # -- Filter and group data --
