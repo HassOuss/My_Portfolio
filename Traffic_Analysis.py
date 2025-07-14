@@ -257,7 +257,9 @@ df['DATE_POLICE_NOTIFIED'] = pd.to_datetime(
     errors='coerce'
 )
 
-year_selected = st.sidebar.selectbox("Select Year")
+year_selected = st.sidebar.selectbox("Select Year", [2019, 2020, 2021, 2022, 2023]
+ sorted(df['DATE_POLICE_NOTIFIED'].dt.year.dropna().unique(), reverse=True)
+)
 view_option = st.sidebar.radio("Select Map View", ("Cluster Markers", "Heatmap"))
 
 # -- Filter and group data --
