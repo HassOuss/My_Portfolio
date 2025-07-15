@@ -218,35 +218,6 @@ ax.set_ylabel('Number of Crashes', fontsize=14)
 ax.set_title('Total Crashes by Month', fontsize=16)
 st.pyplot(fig)
 
-# Display map
-st.subheader("📍 Crash Locations in Chicago")
-
-# Drop missing coordinates
-df_map = df.dropna(subset=["LATITUDE", "LONGITUDE"])
-
-# Group by coordinates and count
-crash_counts = df_map.groupby(['LATITUDE', 'LONGITUDE']).size().reset_index(name='count')
-
-# Default center: mean location
-default_location = [df_map['LATITUDE'].mean(), df_map['LONGITUDE'].mean()]
-
-# Create folium map
-m = folium.Map(location=default_location, zoom_start=11)
-
-# Add markers
-for _, row in crash_counts.iterrows():
-    folium.CircleMarker(
-        location=[row['LATITUDE'], row['LONGITUDE']],
-        radius=min(row['count'] / 100, 10),  # limit size
-        color='crimson',
-        fill=True,
-        fill_opacity=0.6,
-        popup=f"Crashes: {row['count']}"
-    ).add_to(m)
-
-# Display map in Streamlit
-st_data = st_folium(m, width=900, height=500)
-
 ######### Test
 
 # Clean column names
