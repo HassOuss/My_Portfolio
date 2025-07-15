@@ -249,9 +249,6 @@ st_data = st_folium(m, width=900, height=500)
 
 ######### Test
 
-# Load data
-df = pd.read_csv("your_file.csv")  # Make sure your file path is correct
-
 # Clean column names
 df.columns = df.columns.str.strip()
 
