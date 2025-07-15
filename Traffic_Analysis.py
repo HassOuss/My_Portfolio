@@ -249,59 +249,49 @@ st_data = st_folium(m, width=900, height=500)
 
 ######### Test
 
-# --- Prepare Data ---
-df['DATE_POLICE_NOTIFIED'] = pd.to_datetime(
-    df['DATE_POLICE_NOTIFIED'],
-    format='%m/%d/%Y %I:%M:%S %p',
-    errors='coerce'
-)
+# Load data
+df = pd.read_csv("your_file.csv")  # Make sure your file path is correct
+
+# Clean column names
+df.columns = df.columns.str.strip()
+
+# Convert date to datetime
+df['DATE_POLICE_NOTIFIED'] = pd.to_datetime(df['DATE_POLICE_NOTIFIED'], format='%m/%d/%Y %I:%M:%S %p', errors='coerce')
 
 # Sidebar filters
 year_selected = st.sidebar.selectbox(
     "Select Year",
     sorted(df['DATE_POLICE_NOTIFIED'].dt.year.dropna().unique(), reverse=True)
 )
-view_option = st.sidebar.radio("Select Map View", ("Cluster Markers", "Heatmap"))
 
-# Filtered data
+view_option = st.sidebar.radio("Map Type", ("Cluster Markers", "Heatmap"))
+
+# Filter data
 df_filtered = df[df['DATE_POLICE_NOTIFIED'].dt.year == year_selected]
 crash_counts = df_filtered.dropna(subset=["LATITUDE", "LONGITUDE"]) \
-    .groupby(['LATITUDE', 'LONGITUDE']).size().reset_index(name='count')
+    .groupby(["LATITUDE", "LONGITUDE"]).size().reset_index(name='count')
 
-# Show warning if empty
-if crash_counts.empty:
-    st.warning("No crash data available for the selected year.")
-    # Create a fallback map centered on downtown Chicago
-    m = folium.Map(location=[41.8781, -87.6298], zoom_start=11)
-else:
-    # Center the map based on the data
-    default_location = [crash_counts['LATITUDE'].mean(), crash_counts['LONGITUDE'].mean()]
-    m = folium.Map(location=default_location, zoom_start=11)
+# Create map
+default_location = [crash_counts['LATITUDE'].mean(), crash_counts['LONGITUDE'].mean()]
+m = folium.Map(location=default_location, zoom_start=11)
 
-    # Fit to bounds
-    bounds = [
-        [crash_counts['LATITUDE'].min(), crash_counts['LONGITUDE'].min()],
-        [crash_counts['LATITUDE'].max(), crash_counts['LONGITUDE'].max()]
-    ]
-    m.fit_bounds(bounds)
+# Add selected map layer
+if view_option == "Cluster Markers":
+    marker_cluster = MarkerCluster().add_to(m)
+    for _, row in crash_counts.iterrows():
+        folium.CircleMarker(
+            location=[row['LATITUDE'], row['LONGITUDE']],
+            radius=min(row['count'] / 100, 10),
+            color='crimson',
+            fill=True,
+            fill_opacity=0.6,
+            popup=f"Crashes: {row['count']}"
+        ).add_to(marker_cluster)
 
-    # Add the selected map view
-    if view_option == "Cluster Markers":
-        marker_cluster = MarkerCluster().add_to(m)
-        for _, row in crash_counts.iterrows():
-            folium.CircleMarker(
-                location=[row['LATITUDE'], row['LONGITUDE']],
-                radius=min(row['count'] / 100, 10),
-                color='crimson',
-                fill=True,
-                fill_opacity=0.6,
-                popup=f"Crashes: {row['count']}"
-            ).add_to(marker_cluster)
+elif view_option == "Heatmap":
+    heat_data = crash_counts[['LATITUDE', 'LONGITUDE', 'count']].values.tolist()
+    HeatMap(heat_data, radius=15).add_to(m)
 
-    elif view_option == "Heatmap":
-        heat_data = crash_counts[['LATITUDE', 'LONGITUDE', 'count']].values.tolist()
-        HeatMap(heat_data, radius=15).add_to(m)
-
-# Display the map
-st.subheader("📍 Crash Map")
+# Show map
+st.subheader("📍 Crash Locations in Chicago")
 st_folium(m, width=900, height=500)
