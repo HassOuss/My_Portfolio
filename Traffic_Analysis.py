@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
+from streamlit_folium import st_folium
+import folium
+from folium.plugins import MarkerCluster, HeatMap
+
 
 st.title("Chicago Traffic Crashes Dashboard")
 st.markdown("Analyze patterns in crashes by control devices, lighting, weather, and more.")
@@ -22,12 +26,24 @@ else:
         st.error("No file uploaded and default sample data not found.")
         st.stop()
 
-# === Shared Analysis Below ===
+# === Data Overview ===
 
 st.subheader("Raw Data Preview")
 st.dataframe(df.head())
 
-# Data Preprocessing
+df.nunique()
+df.info()
+st.subheader("Data Description")
+df.describe().T
+# Print the shape of the DataFrame to show the number of rows and columns
+print(df.shape)
+
+# find missing values.
+# The dataset has 919504 rows and we can see that some variable have more than 900000 missing values. 
+# I will remove those variable   
+df.isnull().sum()[df.isnull().sum()>0].sort_values(ascending=False)
+
+# === Data Preprocessing ===
 selected_columns = [
     'POSTED_SPEED_LIMIT', 'TRAFFIC_CONTROL_DEVICE', 'DEVICE_CONDITION',
     'WEATHER_CONDITION', 'LIGHTING_CONDITION', 'FIRST_CRASH_TYPE',
@@ -45,10 +61,6 @@ selected_columns = [
 existing_columns = [col for col in selected_columns if col in df.columns]
 df = df[existing_columns]
 
-# Optional: show missing columns
-missing_columns = [col for col in selected_columns if col not in df.columns]
-if missing_columns:
-    st.warning(f"Missing columns in uploaded data: {missing_columns}")
 
 # === VISUALIZATIONS ===
 st.subheader("Bar Chart Selector")
@@ -163,7 +175,7 @@ st.pyplot(fig7)
 st.subheader("Crash Trends Over Time")
 # TOTAL CRASHES BY HOUR
 st.subheader("Total Crashes by Hour")
-st.markdown("Among all hours of the day, 3 PM registers the peak in crash frequency.")
+st.markdown("-Among all hours of the day, 3 PM registers the peak in crash frequency.")
 
 time_hour = df.groupby('CRASH_HOUR').size().reset_index(name='Number of Crashes')
 hourly_crashes = time_hour.groupby('CRASH_HOUR')['Number of Crashes'].sum().reset_index(name='Total Crashes')
@@ -178,7 +190,7 @@ st.pyplot(fig)
 
 # TOTAL CRASHES BY DAY OF THE WEEK
 st.subheader("Total Crashes by Day of the Week")
-st.markdown("Crashes are more frequent on Saturdays than on any other day of the week.")
+st.markdown("-Crashes are more frequent on Saturdays than on any other day of the week.")
 
 time_day = df.groupby('CRASH_DAY_OF_WEEK').size().reset_index(name='Number of Crashes')
 daily_crashes = time_day.groupby('CRASH_DAY_OF_WEEK')['Number of Crashes'].sum().reset_index(name='Total Crashes')
@@ -193,7 +205,7 @@ st.pyplot(fig)
 
 # TOTAL CRASHES BY MONTH
 st.subheader("Total Crashes by Month")
-st.markdown("📌 **Observation:** Crashes are more frequent in **September** than in any other month of the year.")
+st.markdown("-**Observation:** Crashes are more frequent in September than in any other month of the year.")
 
 time_month = df.groupby('CRASH_MONTH').size().reset_index(name='Number of Crashes')
 monthly_crashes = time_month.groupby('CRASH_MONTH')['Number of Crashes'].sum().reset_index(name='Total Crashes')
@@ -205,3 +217,49 @@ ax.set_xlabel('Month (1–12)', fontsize=14)
 ax.set_ylabel('Number of Crashes', fontsize=14)
 ax.set_title('Total Crashes by Month', fontsize=16)
 st.pyplot(fig)
+
+######### Test
+
+# Clean column names
+df.columns = df.columns.str.strip()
+
+# Convert date to datetime
+df['DATE_POLICE_NOTIFIED'] = pd.to_datetime(df['DATE_POLICE_NOTIFIED'], format='%m/%d/%Y %I:%M:%S %p', errors='coerce')
+
+# Sidebar filters
+year_selected = st.sidebar.selectbox(
+    "Select Year",
+    sorted(df['DATE_POLICE_NOTIFIED'].dt.year.dropna().unique(), reverse=True)
+)
+
+view_option = st.sidebar.radio("Map Type", ("Cluster Markers", "Heatmap"))
+
+# Filter data
+df_filtered = df[df['DATE_POLICE_NOTIFIED'].dt.year == year_selected]
+crash_counts = df_filtered.dropna(subset=["LATITUDE", "LONGITUDE"]) \
+    .groupby(["LATITUDE", "LONGITUDE"]).size().reset_index(name='count')
+
+# Create map
+default_location = [crash_counts['LATITUDE'].mean(), crash_counts['LONGITUDE'].mean()]
+m = folium.Map(location=default_location, zoom_start=11)
+
+# Add selected map layer
+if view_option == "Cluster Markers":
+    marker_cluster = MarkerCluster().add_to(m)
+    for _, row in crash_counts.iterrows():
+        folium.CircleMarker(
+            location=[row['LATITUDE'], row['LONGITUDE']],
+            radius=min(row['count'] / 100, 10),
+            color='crimson',
+            fill=True,
+            fill_opacity=0.6,
+            popup=f"Crashes: {row['count']}"
+        ).add_to(marker_cluster)
+
+elif view_option == "Heatmap":
+    heat_data = crash_counts[['LATITUDE', 'LONGITUDE', 'count']].values.tolist()
+    HeatMap(heat_data, radius=15).add_to(m)
+
+# Show map
+st.subheader("📍 Crash Locations in Chicago")
+st_folium(m, width=900, height=500)
