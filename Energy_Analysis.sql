@@ -166,5 +166,51 @@ JOIN energy_Import i
     ON p.month = i.month
 LIMIT 1000;
 
+#### Data visualization
+# --- Convert 'month' to datetime ---
+df["month"] = pd.to_datetime(df["month"], format="%Y-%m")
 
+# --- Title ---
+st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
 
+# --- 1. Line Chart: Total Production vs. Consumption ---
+st.subheader("Total Primary Energy Production vs. Consumption")
+
+fig1, ax1 = plt.subplots(figsize=(10, 5))
+ax1.plot(df["month"], df["Total_Production"], label="Total Production", marker="o")
+ax1.plot(df["month"], df["Total_Consumption"], label="Total Consumption", marker="x")
+ax1.set_title("Total Energy Production vs. Consumption")
+ax1.set_xlabel("Year")
+ax1.set_ylabel("Energy (units)")
+ax1.legend()
+ax1.grid(True)
+st.pyplot(fig1)
+
+# --- 2. Stacked Bar Chart: Energy Gaps ---
+st.subheader("Energy Gaps by Source (Production - Consumption)")
+
+df["Fossil_Gap"] = df["Fossil_Production"] - df["Fossil_Consumption"]
+df["Renewable_Gap"] = df["Renewable_Production"] - df["Renewable_Consumption"]
+df["Nuclear_Gap"] = df["Nuclear_Production"] - df["Nuclear_Consumption"]
+
+df_gap = df[["month", "Fossil_Gap", "Renewable_Gap", "Nuclear_Gap"]].set_index("month")
+
+fig2, ax2 = plt.subplots(figsize=(12, 6))
+df_gap.plot(kind="bar", stacked=True, ax=ax2)
+ax2.set_title("Energy Gaps by Source")
+ax2.set_ylabel("Gap (Production - Consumption)")
+ax2.set_xlabel("Year")
+st.pyplot(fig2)
+
+# --- 3. Line Chart: Import Dependency ---
+st.subheader("Energy Import Dependency Over Time")
+
+df["Import_Dependency"] = (df["Primary_Energy_Imports"] / df["Total_Consumption"]) * 100
+
+fig3, ax3 = plt.subplots(figsize=(10, 5))
+ax3.plot(df["month"], df["Import_Dependency"], marker="s", color="darkorange")
+ax3.set_title("Energy Import Dependency (%)")
+ax3.set_xlabel("Year")
+ax3.set_ylabel("Import Dependency (%)")
+ax3.grid(True)
+st.pyplot(fig3)
