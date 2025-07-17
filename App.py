@@ -64,7 +64,7 @@ df["Fossil_Gap"] = df["Fossil_Production"] - df["Fossil_Consumption"]
 df["Renewable_Gap"] = df["Renewable_Production"] - df["Renewable_Consumption"]
 df["Nuclear_Gap"] = df["Nuclear_Production"] - df["Nuclear_Consumption"]
 
-df_gap = df[["Month", "Fossil_Gap", "Renewable_Gap", "Nuclear_Gap"]].set_index("month")
+df_gap = df[["Fossil_Gap", "Renewable_Gap", "Nuclear_Gap"]]
 
 fig2, ax2 = plt.subplots(figsize=(12, 6))
 df_gap.plot(kind="bar", stacked=True, ax=ax2)
