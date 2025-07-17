@@ -1,3 +1,17 @@
+import streamlit as st
+import duckdb
+import pandas as pd
+import matplotlib.pyplot as plt
+
+st.title("Energy SQL Dashboard")
+
+# 1. Connect to DuckDB
+con = duckdb.connect(database=':memory:')
+
+# 2. Loading CSVs into DuckDB tables
+con.execute("CREATE TABLE energy_production AS SELECT * FROM read_csv_auto('Energy_Production.csv');")
+con.execute("CREATE TABLE energy_consumption AS SELECT * FROM read_csv_auto('Energy_Consumption.csv');")
+con.execute("CREATE TABLE energy_import AS SELECT * FROM read_csv_auto('Energy_Import.csv');")
 
 df = con.execute(query).df()
 
