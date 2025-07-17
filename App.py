@@ -32,18 +32,11 @@ JOIN energy_import i ON p.month = i.month
 
 df = con.execute(query).df()
 
-st.write("Available columns:", df.columns.tolist())
-
-
 # --- Convert 'month' to datetime ---
 df["Month"] = pd.to_datetime(df["Month"], format="%Y %B")
 
 df["Year"] = df["Month"].dt.year
 df_yearly = df.groupby("Year").mean(numeric_only=True).reset_index()
-
-
-# setting the date as the index of the time series plots
-#df.set_index("Month", inplace=True)
 
 # --- Title ---
 st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
