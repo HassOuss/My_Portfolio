@@ -15,7 +15,7 @@ con.execute("CREATE TABLE energy_import AS SELECT * FROM read_csv_auto('Energy_I
 
 query = """
 SELECT
-    p.month,
+    p.month AS Month,
     p.Total_Primary_Energy_Production AS Total_Production,
     c.Total_Primary_Energy_Consumption AS Total_Consumption,
     p.Fossil_Fuels_Production AS Fossil_Production,
