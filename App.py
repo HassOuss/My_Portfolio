@@ -38,8 +38,12 @@ st.write("Available columns:", df.columns.tolist())
 # --- Convert 'month' to datetime ---
 df["Month"] = pd.to_datetime(df["Month"], format="%Y %B")
 
+df["Year"] = df["Month"].dt.year
+df_yearly = df.groupby("Year").mean(numeric_only=True).reset_index()
+
+
 # setting the date as the index of the time series plots
-df.set_index("Month", inplace=True)
+#df.set_index("Month", inplace=True)
 
 # --- Title ---
 st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
@@ -48,8 +52,8 @@ st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
 st.subheader("Total Primary Energy Production vs. Consumption")
 
 fig1, ax1 = plt.subplots(figsize=(10, 5))
-ax1.plot(df.index, df["Total_Production"], label="Total Production", marker="o")
-ax1.plot(df.index, df["Total_Consumption"], label="Total Consumption", marker="x")
+ax1.plot(df_yearly["Year"], df_yearly["Total_Production"], label="Total Production", marker="o")
+ax1.plot(df_yearly["Year"], df_yearly["Total_Consumption"], label="Total Consumption", marker="x")
 ax1.set_title("Total Energy Production vs. Consumption")
 ax1.set_xlabel("Year")
 ax1.set_ylabel("Energy (units)")
@@ -60,11 +64,11 @@ st.pyplot(fig1)
 # --- 2. Stacked Bar Chart: Energy Gaps ---
 st.subheader("Energy Gaps by Source (Production - Consumption)")
 
-df["Fossil_Gap"] = df["Fossil_Production"] - df["Fossil_Consumption"]
-df["Renewable_Gap"] = df["Renewable_Production"] - df["Renewable_Consumption"]
-df["Nuclear_Gap"] = df["Nuclear_Production"] - df["Nuclear_Consumption"]
+df_yearly["Fossil_Gap"] = df_yearly["Fossil_Production"] - df_yearly["Fossil_Consumption"]
+df_yearly["Renewable_Gap"] = df_yearly["Renewable_Production"] - df_yearly["Renewable_Consumption"]
+df_yearly["Nuclear_Gap"] = df_yearly["Nuclear_Production"] - df_yearly["Nuclear_Consumption"]
 
-df_gap = df[["Fossil_Gap", "Renewable_Gap", "Nuclear_Gap"]]
+df_gap = df_yearly[["Fossil_Gap", "Renewable_Gap", "Nuclear_Gap"]]
 
 fig2, ax2 = plt.subplots(figsize=(12, 6))
 df_gap.plot(kind="bar", stacked=True, ax=ax2)
@@ -76,10 +80,10 @@ st.pyplot(fig2)
 # --- 3. Line Chart: Import Dependency ---
 st.subheader("Energy Import Dependency Over Time")
 
-df["Import_Dependency"] = (df["Primary_Energy_Imports"] / df["Total_Consumption"]) * 100
+df_yearly["Import_Dependency"] = (df_yearly["Primary_Energy_Imports"] / df_yearly["Total_Consumption"]) * 100
 
 fig3, ax3 = plt.subplots(figsize=(10, 5))
-ax3.plot(df.index, df["Import_Dependency"], marker="s", color="darkorange")
+ax3.plot(df_yearly["Year"], df_yearly["Import_Dependency"], marker="s", color="darkorange")
 ax3.set_title("Energy Import Dependency (%)")
 ax3.set_xlabel("Year")
 ax3.set_ylabel("Import Dependency (%)")
