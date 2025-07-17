@@ -48,8 +48,8 @@ st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
 st.subheader("Total Primary Energy Production vs. Consumption")
 
 fig1, ax1 = plt.subplots(figsize=(10, 5))
-ax1.plot(df.index, df["Total_Primary_Energy_Production"], label="Total Production", marker="o")
-ax1.plot(df.index, df["Total_Primary_Energy_Consumption"], label="Total Consumption", marker="x")
+ax1.plot(df.index, df["Total_Production"], label="Total Production", marker="o")
+ax1.plot(df.index, df["Total_Consumption"], label="Total Consumption", marker="x")
 ax1.set_title("Total Energy Production vs. Consumption")
 ax1.set_xlabel("Year")
 ax1.set_ylabel("Energy (units)")
@@ -60,9 +60,9 @@ st.pyplot(fig1)
 # --- 2. Stacked Bar Chart: Energy Gaps ---
 st.subheader("Energy Gaps by Source (Production - Consumption)")
 
-df["Fossil_Gap"] = df["Fossil_Fuels_Production"] - df["Fossil_Fuels_Consumption"]
-df["Renewable_Gap"] = df["Renewable_Energy_Production"] - df["Renewable_Energy_Consumption"]
-df["Nuclear_Gap"] = df["Nuclear_Electric_Production"] - df["Nuclear_Electric_Consumption"]
+df["Fossil_Gap"] = df["Fossil_Production"] - df["Fossil_Consumption"]
+df["Renewable_Gap"] = df["Renewable_Production"] - df["Renewable_Consumption"]
+df["Nuclear_Gap"] = df["Nuclear_Production"] - df["Nuclear_Consumption"]
 
 df_gap = df[["Month", "Fossil_Gap", "Renewable_Gap", "Nuclear_Gap"]].set_index("month")
 
@@ -76,7 +76,7 @@ st.pyplot(fig2)
 # --- 3. Line Chart: Import Dependency ---
 st.subheader("Energy Import Dependency Over Time")
 
-df["Import_Dependency"] = (df["Primary_Energy_Imports"] / df["Total_Primary_Energy_Consumption"]) * 100
+df["Import_Dependency"] = (df["Primary_Energy_Imports"] / df["Total_Consumption"]) * 100
 
 fig3, ax3 = plt.subplots(figsize=(10, 5))
 ax3.plot(df.index, df["Import_Dependency"], marker="s", color="darkorange")
