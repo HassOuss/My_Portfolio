@@ -32,6 +32,9 @@ JOIN energy_import i ON p.month = i.month
 
 df = con.execute(query).df()
 
+st.write("Available columns:", df.columns.tolist())
+
+
 # --- Convert 'month' to datetime ---
 df["Month"] = pd.to_datetime(df["Month"], format="%Y %B")
 
