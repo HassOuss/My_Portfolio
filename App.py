@@ -13,8 +13,6 @@ con.execute("CREATE TABLE energy_production AS SELECT * FROM read_csv_auto('Ener
 con.execute("CREATE TABLE energy_consumption AS SELECT * FROM read_csv_auto('Energy_Consumption.csv');")
 con.execute("CREATE TABLE energy_import AS SELECT * FROM read_csv_auto('Energy_Import.csv');")
 
-df["month"] = pd.to_datetime(df["month"], format="%Y-%m")
-
 query = """
 SELECT
     p.month,
@@ -33,6 +31,7 @@ JOIN energy_import i ON p.month = i.month
 """
 
 df = con.execute(query).df()
+df["month"] = pd.to_datetime(df["month"], format="%Y-%m")
 
 # --- Convert 'month' to datetime ---
 df["month"] = pd.to_datetime(df["month"], format="%Y-%m")
