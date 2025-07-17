@@ -33,8 +33,11 @@ JOIN energy_import i ON p.month = i.month
 df = con.execute(query).df()
 df["Month"] = pd.to_datetime(df["Month"], format="%Y-%m")
 
+# setting the date as the index of the time series plots
+df.set_index("Month", inplace=True)
+
 # --- Convert 'month' to datetime ---
-df["Month"] = pd.to_datetime(df["Month"], format="%Y-%m")
+df["Month"] = pd.to_datetime(df["Month"], format="%Y %B")
 
 # --- Title ---
 st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
