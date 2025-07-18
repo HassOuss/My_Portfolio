@@ -3,8 +3,6 @@ import duckdb
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.title("Energy SQL Dashboard")
-
 # 1. Connect to DuckDB
 con = duckdb.connect(database=':memory:')
 
