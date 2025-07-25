@@ -37,7 +37,7 @@ df["Year"] = df["Month"].dt.year
 df_yearly = df.groupby("Year").mean(numeric_only=True).reset_index()
 
 # --- Title ---
-st.title("📊 Energy Production, Consumption, and Gaps Dashboard")
+st.title("Energy Production, Consumption, and Gaps Dashboard")
 
 # --- 1. Line Chart: Total Production vs. Consumption ---
 st.subheader("Total Primary Energy Production vs. Consumption")
