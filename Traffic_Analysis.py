@@ -218,7 +218,6 @@ ax.set_ylabel('Number of Crashes', fontsize=14)
 ax.set_title('Total Crashes by Month', fontsize=16)
 st.pyplot(fig)
 
-######### Test
 
 # Clean column names
 df.columns = df.columns.str.strip()
@@ -261,5 +260,5 @@ elif view_option == "Heatmap":
     HeatMap(heat_data, radius=15).add_to(m)
 
 # Show map
-st.subheader("📍 Crash Locations in Chicago")
+st.subheader("Crash Locations in Chicago")
 st_folium(m, width=900, height=500)
