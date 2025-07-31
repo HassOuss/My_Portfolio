@@ -30,17 +30,18 @@ else:
 
 st.subheader("Raw Data Preview")
 st.dataframe(df.head())
-
 df.nunique()
 df.info()
+
 st.subheader("Data Description")
-df.describe().T
+# Select only specific numerical columns
+selected_cols = ["POSTED_SPEED_LIMIT", "CRASH_HOUR", "CRASH_DAY_OF_WEEK", "CRASH_MONTH", "INJURIES_TOTAL", "INJURIES_FATAL"]
+st.dataframe(df[selected_cols].describe().T)
+
 # Print the shape of the DataFrame to show the number of rows and columns
 print(df.shape)
 
-# find missing values.
-# The dataset has 919504 rows and we can see that some variable have more than 900000 missing values. 
-# I will remove those variable   
+# find missing values. 
 df.isnull().sum()[df.isnull().sum()>0].sort_values(ascending=False)
 
 # === Data Preprocessing ===
