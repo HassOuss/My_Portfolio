@@ -29,6 +29,12 @@ Income_t <- income %>%
 
 
 # Prepare cleaned data
+Balance_sheet_t_clean <- Balance_sheet_t %>%
+  mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+
+Cash_flow_t_clean <- Cash_flow_t %>%
+  mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+
 Income_t_clean <- Income_t %>%
   filter(Year != "ttm") %>% # remove ttm for plotting
   mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
@@ -77,7 +83,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   output$quickRatioPlot <- renderPlot({
-    ggplot(Balance_sheet_t_clean, aes(x = Observation, y = Quick_Ratio)) +
+    ggplot(Balance_sheet_t_clean, aes(x = Year, y = Quick_Ratio)) +
       geom_line(color = "blue", size = 1) +        
       geom_point(color = "darkred", size = 2) +    
       geom_hline(yintercept = 1, linetype = "dashed", color = "black") + 
