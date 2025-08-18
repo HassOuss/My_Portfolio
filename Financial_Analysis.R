@@ -39,15 +39,23 @@ Income_t_clean <- Income_t %>%
   filter(Year != "ttm") %>% # remove ttm for plotting
   mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
 
+########
 # Define UI
 ui <- fluidPage(
   titlePanel("Financial Analysis Dashboard"),
   sidebarLayout(
     sidebarPanel(
-      helpText("This app displays Total Revenue, Gross Profit, and EBITDA over time.")
+      helpText("This app displays key financial metrics over time.")
     ),
     mainPanel(
-      plotOutput("financialPlot") ) ))
+      tabsetPanel(   # 👈 put multiple plots into tabs
+        tabPanel("Financials", plotOutput("financialPlot")),
+        tabPanel("Quick Ratio", plotOutput("quickRatioPlot"))
+      )
+    )
+  )
+)
+#########
 
 # Define Server
 server <- function(input, output) {
@@ -64,24 +72,8 @@ server <- function(input, output) {
       ) +
       theme_minimal()
   })
-}
 
-###Quick Ratio
-
-ui <- fluidPage(
-  sidebarLayout(
-    sidebarPanel(
-      helpText("Quick Ratio")
-    ),
-    
-    mainPanel(
-      plotOutput("quickRatioPlot")  # ⬅️ This is where the chart will display
-    )
-  )
-)
-
-server <- function(input, output, session) {
-  
+###Quick Ratio  
   output$quickRatioPlot <- renderPlot({
     ggplot(Balance_sheet_t_clean, aes(x = Year, y = Quick_Ratio)) +
       geom_line(color = "blue", size = 1) +        
