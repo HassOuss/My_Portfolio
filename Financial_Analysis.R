@@ -35,7 +35,7 @@ Income_t_clean <- Income_t %>%
 
 # Define UI
 ui <- fluidPage(
-  titlePanel("Financial Performance Over Time"),
+  titlePanel("Financial Analysis Dashboard"),
   sidebarLayout(
     sidebarPanel(
       helpText("This app displays Total Revenue, Gross Profit, and EBITDA over time.")
@@ -55,6 +55,40 @@ server <- function(input, output) {
         y = "Value (Billions)",
         x = "Date",
         color = "Metric"
+      ) +
+      theme_minimal()
+  })
+}
+
+###Quick Ratio
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Quick Ratio")
+    ),
+    
+    mainPanel(
+      plotOutput("quickRatioPlot")  # ⬅️ This is where the chart will display
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+  output$quickRatioPlot <- renderPlot({
+    ggplot(Balance_sheet_t_clean, aes(x = Observation, y = Quick_Ratio)) +
+      geom_line(color = "blue", size = 1) +        
+      geom_point(color = "darkred", size = 2) +    
+      geom_hline(yintercept = 1, linetype = "dashed", color = "black") + 
+      geom_text(
+        aes(label = round(Quick_Ratio, 2)),   
+        vjust = -0.5, color = "black", size = 3.5
+      ) +  
+      labs(
+        title = "Quick Ratio Over Time",
+        x = "Year",
+        y = "Quick Ratio"
       ) +
       theme_minimal()
   })
