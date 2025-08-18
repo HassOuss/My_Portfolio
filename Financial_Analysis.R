@@ -110,8 +110,7 @@ output$EBITDA_NetIncPlot <- renderPlot({
     y = "Billions",
     color = "Metric"
   ) +
-  theme_minimal() +
-  scale_color_manual(values = c("EBITDA" = "blue", "Net Income" = "red"))
+  theme_minimal()
     }) 
 ## Plot Operating Cash Flow vs Free Cash Flow
 output$cashFlowPlot <- renderPlot({
