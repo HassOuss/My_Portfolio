@@ -97,7 +97,6 @@ server <- function(input, output) {
       ) +
       theme_minimal()
   })
-
 ## Plot Operating Cash Flow vs Free Cash Flow
 output$cashFlowPlot <- renderPlot({
 ggplot(Cash_flow_t_clean, aes(x = Year)) +
@@ -109,11 +108,8 @@ ggplot(Cash_flow_t_clean, aes(x = Year)) +
     y = "Billions",
     color = "Metric"
   ) +
-  theme_minimal() +
-  scale_color_manual(values = c("Operating Cash Flow" = "blue", 
-                                "Free Cash Flow" = "green"))
-   })
-
+  theme_minimal()
+ })
 ###Quick Ratio  
   output$quickRatioPlot <- renderPlot({
     ggplot(Balance_sheet_t_clean, aes(x = Year, y = Quick_Ratio)) +
