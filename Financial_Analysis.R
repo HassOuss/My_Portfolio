@@ -82,7 +82,6 @@ ui <- fluidPage(
 )
 
 #########
-
 # Define Server
 server <- function(input, output) {
   output$financialPlot <- renderPlot({
@@ -98,6 +97,22 @@ server <- function(input, output) {
       ) +
       theme_minimal()
   })
+
+## Plot Operating Cash Flow vs Free Cash Flow
+output$cashFlowPlot <- renderPlot({
+ggplot(Cash_flow_t_clean, aes(x = Year)) +
+  geom_line(aes(y = OperatingCashFlow, color = "Operating Cash Flow"), linewidth = 1.2) +
+  geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), linewidth = 1.2) +
+  labs(
+    title = "Operating Cash Flow vs Free Cash Flow",
+    x = "Date",
+    y = "Billions",
+    color = "Metric"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Operating Cash Flow" = "blue", 
+                                "Free Cash Flow" = "green"))
+   })
 
 ###Quick Ratio  
   output$quickRatioPlot <- renderPlot({
