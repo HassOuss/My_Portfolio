@@ -79,7 +79,8 @@ ui <- fluidPage(
   h2("Income Statement"),
   h3("Revenue, Gross Profit & EBITDA"),
   plotOutput("financialPlot"),
-  plotOutput("EBITDA_NetIncPlot")
+  plotOutput("EBITDA_NetIncPlot"),
+  plotOutput("TRev_TExPlot")
 )
 
 #########
@@ -112,6 +113,16 @@ output$EBITDA_NetIncPlot <- renderPlot({
   ) +
   theme_minimal()
     }) 
+  ## Total Revenue vs Total Expenses
+output$TRev_TExPlot <- renderPlot({
+  ggplot(Income_t_clean, aes(x = Year)) +
+  geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
+  geom_line(aes(y = TotalExpenses, color = "TotalExpenses"), linewidth = 1) +
+  labs(title = "Revenue vs Expenses",  x = "Date", y = "Billions",
+    color = "Metric") +
+  theme_minimal()
+    }) 
+  
 ## Plot Operating Cash Flow vs Free Cash Flow
 output$cashFlowPlot <- renderPlot({
 ggplot(Cash_flow_t_clean, aes(x = Year)) +
