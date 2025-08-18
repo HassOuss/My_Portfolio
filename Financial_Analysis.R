@@ -4,7 +4,6 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(skimr)
-library(readr)
 library(tidyr)
 library(reshape2)
 
@@ -38,6 +37,11 @@ Cash_flow_t_clean <- Cash_flow_t %>%
 Income_t_clean <- Income_t %>%
   filter(Year != "ttm") %>% # remove ttm for plotting
   mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+
+## Adding Quick Ratio to Balance Sheet column
+Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
+  mutate(Quick_Ratio = (CurrentAssets - Inventory) / CurrentLiabilities)
+
 
 ########
 # Define UI
