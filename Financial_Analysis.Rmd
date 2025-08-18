@@ -1,0 +1,155 @@
+```{r}
+# Load libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(skimr)
+library(readr)
+library(tidyr)
+balance_sheet <- read_csv("/Users/hass.ouss/Documents/Portfolio/Projects_Data/Balance_sheet.csv")
+cash_flow <- read_csv("/Users/hass.ouss/Documents/Portfolio/Projects_Data/Cash_flow.csv")
+income <- read_csv("/Users/hass.ouss/Documents/Portfolio/Projects_Data/Financials.csv")
+```
+
+
+```{r}
+# Transpose if variables are in rows
+Balance_sheet_t <- balance_sheet %>%
+  pivot_longer(cols = -1, names_to = "Observation", values_to = "Value") %>%
+  pivot_wider(names_from = 1, values_from = Value)
+
+Cash_flow_t <- cash_flow %>%
+  pivot_longer(cols = -1, names_to = "Observation", values_to = "Value") %>%
+  pivot_wider(names_from = 1, values_from = Value)
+
+Income_t <- income %>%
+  pivot_longer(cols = -1, names_to = "Observation", values_to = "Value") %>%
+  pivot_wider(names_from = 1, values_from = Value)
+
+# Explore the reshaped data
+head(Cash_flow_t)
+```  
+
+```{r}
+# Column names
+colnames(Balance_sheet_t)
+colnames(Cash_flow_t)
+colnames(Income_t)
+
+# Structure of the dataset
+str(Balance_sheet_t)
+str(Cash_flow_t)
+str(Income_t)
+
+# Summary statistics
+summary(Balance_sheet_t)
+summary(Cash_flow_t)
+summary(Income_t)
+
+# Quick profiling
+skim(Balance_sheet_t)
+skim(Cash_flow_t)
+skim(Income_t)
+```
+
+```{r}
+colSums(is.na(Income_t))
+```
+
+
+```{r}
+# Mean, median, min, max for numeric columns
+Income_t %>%
+  summarise(
+    mean   = mean(TotalRevenue, na.rm = TRUE),
+    median = median(TotalRevenue, na.rm = TRUE),
+    min    = min(TotalRevenue, na.rm = TRUE),
+    max    = max(TotalRevenue, na.rm = TRUE)
+  )
+ ```
+
+# Data Visualization
+##Finacial Analysis 
+
+```{r}
+Income_t_clean <- Income_t %>%
+  filter(Observation != "ttm") %>% # remove ttm for plotting
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+
+
+ggplot(Income_t_clean, aes(x = Observation)) +
+  geom_line(aes(y = TotalRevenue, color = "Total Revenue"), linewidth = 1) +
+  geom_line(aes(y = GrossProfit, color = "Gross Profit"), linewidth = 1) +
+  geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
+  labs(
+    title = "Total Revenue, Gross Profit, and EBITDA Over Time",
+    y = "Value (Billions)",
+    x = "Date",
+    color = "Metric"
+  ) +
+  theme_minimal()
+```  
+
+```{r}
+Income_t_clean %>%
+  select(Observation, TotalRevenue, TotalExpenses) %>%
+  pivot_longer(cols = -Observation, names_to = "Metric", values_to = "Value") %>%
+  ggplot(aes(x = Observation, y = Value, color = Metric)) +
+  geom_line(size = 1) +
+  labs(title = "Revenue vs Expenses", x = "Year", y = "Value")
+```
+
+```{r}
+Income_t_clean <- Income_t_clean %>%
+  mutate(GrossMargin = GrossProfit / TotalRevenue,
+         NetMargin   = NetIncome / TotalRevenue)
+
+Income_t_clean %>%
+  select(Observation, GrossMargin, NetMargin) %>%
+  pivot_longer(cols = -Observation, names_to = "Metric", values_to = "Value") %>%
+  ggplot(aes(x = Observation, y = Value, color = Metric)) +
+  geom_line(size = 1.2) +
+  labs(title = "Gross vs Net Profit Margin Over Time",
+       x = "Date", y = "Margin (%)",
+       color = "Metric") +
+  theme_minimal()
+```
+
+```{r}
+# Plot EBITDA & Net Income
+# show company's financial performance
+ggplot(Income_t_clean, aes(x = Observation)) +
+  geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
+  geom_line(aes(y = NetIncome, color = "Net Income"), linewidth = 1) +
+  labs(
+    title = "EBITDA & Net Income Over Time",
+    x = "Date",
+    y = "Billions",
+    color = "Metric"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("EBITDA" = "blue", "Net Income" = "red"))
+```
+
+####Cash Flow Analysis
+```{r}
+# We can see consistent positive Operating Cash Flow and Free Cash Flow moving together, 
+#company not only generates cash from operations but also has healthy free cash to return to shareholders or pay debt.
+Cash_flow_t_clean <- Cash_flow_t %>%
+  filter(Observation != "ttm") %>% #emove ttm
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y")) #convert Observation to date
+
+# Plot Operating Cash Flow vs Free Cash Flow
+ggplot(Cash_flow_t_clean, aes(x = Observation)) +
+  geom_line(aes(y = OperatingCashFlow, color = "Operating Cash Flow"), linewidth = 1.2) +
+  geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), linewidth = 1.2) +
+  labs(
+    title = "Operating Cash Flow vs Free Cash Flow",
+    x = "Date",
+    y = "Billions",
+    color = "Metric"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Operating Cash Flow" = "blue", 
+                                "Free Cash Flow" = "green"))
+``` 
