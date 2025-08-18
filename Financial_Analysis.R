@@ -78,7 +78,8 @@ ui <- fluidPage(
   # Income Statement Section
   h2("Income Statement"),
   h3("Revenue, Gross Profit & EBITDA"),
-  plotOutput("financialPlot")
+  plotOutput("financialPlot"),
+  plotOutput("EBITDA_NetIncPlot")
 )
 
 #########
@@ -97,6 +98,21 @@ server <- function(input, output) {
       ) +
       theme_minimal()
   })
+## Plot EBITDA & Net Income
+# show company's financial performance
+output$EBITDA_NetIncPlot <- renderPlot({
+  ggplot(Income_t_clean, aes(x = Year)) +
+  geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
+  geom_line(aes(y = NetIncome, color = "Net Income"), linewidth = 1) +
+  labs(
+    title = "EBITDA & Net Income Over Time",
+    x = "Date",
+    y = "Billions",
+    color = "Metric"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("EBITDA" = "blue", "Net Income" = "red"))
+    }) 
 ## Plot Operating Cash Flow vs Free Cash Flow
 output$cashFlowPlot <- renderPlot({
 ggplot(Cash_flow_t_clean, aes(x = Year)) +
