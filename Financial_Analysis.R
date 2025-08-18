@@ -44,21 +44,43 @@ Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
 
 
 ########
-# Define UI
+
 ui <- fluidPage(
   titlePanel("Financial Analysis Dashboard"),
-  sidebarLayout(
-    sidebarPanel(
-      helpText("This app displays key financial metrics over time.")
-    ),
-    mainPanel(
-      tabsetPanel(   # 👈 put multiple plots into tabs
-        tabPanel("Financials", plotOutput("financialPlot")),
-        tabPanel("Quick Ratio", plotOutput("quickRatioPlot"))
-      )
-    )
-  )
+  
+  # Balance Sheet Section
+  h2("Balance Sheet Analysis"),
+  h3("Quick Ratio"),
+  plotOutput("quickRatioPlot"),
+  
+  h3("Assets vs Liabilities"),
+  plotOutput("assetsLiabilitiesPlot"),
+  
+  tags$hr(),  # horizontal line for separation
+  
+  # Ratio Analysis Section
+  h2("Ratio Analysis"),
+  h3("Liquidity Ratios"),
+  plotOutput("liquidityRatiosPlot"),
+  
+  h3("Profitability Ratios"),
+  plotOutput("profitabilityRatiosPlot"),
+  
+  tags$hr(),
+  
+  # Cash Flow Section
+  h2("Cash Flow Analysis"),
+  h3("Operating, Investing & Financing"),
+  plotOutput("cashFlowPlot"),
+  
+  tags$hr(),
+  
+  # Income Statement Section
+  h2("Income Statement"),
+  h3("Revenue, Gross Profit & EBITDA"),
+  plotOutput("financialPlot")
 )
+
 #########
 
 # Define Server
