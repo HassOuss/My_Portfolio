@@ -32,6 +32,7 @@ Balance_sheet_t_clean <- Balance_sheet_t %>%
   mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
 
 Cash_flow_t_clean <- Cash_flow_t %>%
+  filter(Year != "ttm") %>% # remove ttm for plotting
   mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
 
 Income_t_clean <- Income_t %>%
