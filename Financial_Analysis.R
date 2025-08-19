@@ -124,6 +124,7 @@ output$TRev_TExPlot <- renderPlot({
   theme_minimal()
     }) 
 ## Test Hybrid Plot: Bars + Line
+Cash_flow_t_clean$Observation <- as.factor(Cash_flow_t_clean$Observation)
 output$cashFlowPlot <- renderPlot({
   ggplot(Cash_flow_t_clean, aes(x = Observation)) +
     # Bars for Operating Cash Flow
