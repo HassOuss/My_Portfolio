@@ -131,7 +131,7 @@ output$cashFlowPlot <- renderPlot({
     geom_col(aes(y = OperatingCashFlow, fill = "Operating Cash Flow"), width = 0.6, alpha = 0.8) +
     
     # Line for Free Cash Flow
-    geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), group = 1), linewidth = 1.2) +
+    geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow", group = 1), linewidth = 1.2) +
     geom_point(aes(y = FreeCashFlow, color = "Free Cash Flow"), size = 2) +
     
     labs(
