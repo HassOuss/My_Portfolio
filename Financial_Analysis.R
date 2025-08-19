@@ -19,7 +19,7 @@ Balance_sheet_t <- balance_sheet %>%
   pivot_wider(names_from = 1, values_from = Value)
 
 Cash_flow_t <- cash_flow %>%
-  pivot_longer(cols = -1, names_to = "Year", values_to = "Value") %>%
+  pivot_longer(cols = -1, names_to = "Observation", values_to = "Value") %>%
   pivot_wider(names_from = 1, values_from = Value)
 
 Income_t <- income %>%
@@ -32,8 +32,8 @@ Balance_sheet_t_clean <- Balance_sheet_t %>%
   mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
 
 Cash_flow_t_clean <- Cash_flow_t %>%
-  filter(Year != "ttm") %>% # remove ttm for plotting
-  mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+  filter(Observation != "ttm") %>% # remove ttm for plotting
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 
 Income_t_clean <- Income_t %>%
   filter(Year != "ttm") %>% # remove ttm for plotting
@@ -125,7 +125,7 @@ output$TRev_TExPlot <- renderPlot({
     }) 
 ## Test Hybrid Plot: Bars + Line
 output$cashFlowPlot <- renderPlot({
-  ggplot(Cash_flow_t_clean, aes(x = Year)) +
+  ggplot(Cash_flow_t_clean, aes(x = Observation)) +
     # Bars for Operating Cash Flow
     geom_col(aes(y = OperatingCashFlow), fill = "steelblue", width = 0.6, alpha = 0.8) +
     
@@ -135,7 +135,7 @@ output$cashFlowPlot <- renderPlot({
     
     labs(
       title = "Operating Cash Flow vs Free Cash Flow",
-      x = "Year",
+      x = "Observation",
       y = "Billions"
     ) +
     theme_minimal()
