@@ -126,7 +126,7 @@ output$TRev_TExPlot <- renderPlot({
 ## Hybrid: Operating Cash Flow (bars) + Free Cash Flow (line)
 Cash_flow_t_clean$Observation <- as.factor(Cash_flow_t_clean$Observation)
 output$cashFlowPlot <- renderPlot({
-  ggplot(Cash_flow_t_clean, aes(x = Year)) +
+  ggplot(Cash_flow_t_clean, aes(x = Observation)) +
     # Bars for Operating Cash Flow
     geom_col(aes(y = OperatingCashFlow, fill = "Operating Cash Flow"), width = 0.6, alpha = 0.8) +
     
@@ -136,7 +136,7 @@ output$cashFlowPlot <- renderPlot({
     
     labs(
       title = "Operating Cash Flow vs Free Cash Flow",
-      x = "Year",
+      x = "Observation",
       y = "Billions",
       fill = "Bar Metric",
       color = "Line Metric"
