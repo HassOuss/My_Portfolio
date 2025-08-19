@@ -122,20 +122,28 @@ output$TRev_TExPlot <- renderPlot({
     color = "Metric") +
   theme_minimal()
     }) 
-  
-## Plot Operating Cash Flow vs Free Cash Flow
+## Hybrid: Operating Cash Flow (bars) + Free Cash Flow (line)
 output$cashFlowPlot <- renderPlot({
-ggplot(Cash_flow_t_clean, aes(x = Year)) +
-  geom_line(aes(y = OperatingCashFlow, color = "Operating Cash Flow"), linewidth = 1.2) +
-  geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), linewidth = 1.2) +
-  labs(
-    title = "Operating Cash Flow vs Free Cash Flow",
-    x = "Date",
-    y = "Billions",
-    color = "Metric"
-  ) +
-  theme_minimal()
- })
+  ggplot(Cash_flow_t_clean, aes(x = Year)) +
+    # Bars for Operating Cash Flow
+    geom_col(aes(y = OperatingCashFlow, fill = "Operating Cash Flow"), width = 0.6, alpha = 0.8) +
+    
+    # Line for Free Cash Flow
+    geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), linewidth = 1.2) +
+    geom_point(aes(y = FreeCashFlow, color = "Free Cash Flow"), size = 2) +
+    
+    labs(
+      title = "Operating Cash Flow vs Free Cash Flow",
+      x = "Year",
+      y = "Billions",
+      fill = "Bar Metric",
+      color = "Line Metric"
+    ) +
+    scale_fill_manual(values = c("Operating Cash Flow" = "steelblue")) +
+    scale_color_manual(values = c("Free Cash Flow" = "darkred")) +
+    theme_minimal()
+})
+
 ###Quick Ratio  
   output$quickRatioPlot <- renderPlot({
     ggplot(Balance_sheet_t_clean, aes(x = Year, y = Quick_Ratio)) +
