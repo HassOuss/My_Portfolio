@@ -123,24 +123,29 @@ output$TRev_TExPlot <- renderPlot({
     color = "Metric") +
   theme_minimal()
     }) 
-## Test Hybrid Plot: Bars + Line
+## Hybrid: Operating Cash Flow (bars) + Free Cash Flow (line)
 Cash_flow_t_clean$Observation <- as.factor(Cash_flow_t_clean$Observation)
 output$cashFlowPlot <- renderPlot({
-  ggplot(Cash_flow_t_clean, aes(x = Observation)) +
+  ggplot(Cash_flow_t_clean, aes(x = Year)) +
     # Bars for Operating Cash Flow
-    geom_col(aes(y = OperatingCashFlow), fill = "steelblue", width = 0.6, alpha = 0.8) +
+    geom_col(aes(y = OperatingCashFlow, fill = "Operating Cash Flow"), width = 0.6, alpha = 0.8) +
     
     # Line for Free Cash Flow
-    geom_line(aes(y = FreeCashFlow), color = "darkred", linewidth = 1.2) +
-    geom_point(aes(y = FreeCashFlow), color = "darkred", size = 2) +
+    geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), linewidth = 1.2) +
+    geom_point(aes(y = FreeCashFlow, color = "Free Cash Flow"), size = 2) +
     
     labs(
       title = "Operating Cash Flow vs Free Cash Flow",
-      x = "Observation",
-      y = "Billions"
+      x = "Year",
+      y = "Billions",
+      fill = "Bar Metric",
+      color = "Line Metric"
     ) +
+    scale_fill_manual(values = c("Operating Cash Flow" = "steelblue")) +
+    scale_color_manual(values = c("Free Cash Flow" = "darkred")) +
     theme_minimal()
 })
+
 
 ###Quick Ratio  
   output$quickRatioPlot <- renderPlot({
