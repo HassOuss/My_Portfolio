@@ -186,10 +186,14 @@ output$revNetIncomePlot <- renderPlot({
              width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
     
     # Line for Profit Margin (rescaled to align with billions axis)
-  geom_line(aes(y = ProfitMargin * scale_factor / 100, color = "Profit Margin", group = 1)), 
-              linewidth = 1.2) +
-    geom_point(aes(y = ProfitMargin * max(c(TotalRevenue, NetIncome)) / 100, 
-                   color = "Profit Margin"), size = 2) +
+ geom_line(
+  aes(y = ProfitMargin * scale_factor / 100, color = "Profit Margin", group = 1),
+  linewidth = 1.2
+) +
+geom_point(
+  aes(y = ProfitMargin * scale_factor / 100, color = "Profit Margin"),
+  size = 2
+) +
     
     labs(
       title = "Revenue & Net Income vs Profit Margin",
