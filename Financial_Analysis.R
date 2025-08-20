@@ -6,7 +6,7 @@ library(ggplot2)
 library(skimr)
 library(tidyr)
 library(reshape2)
-#library(scales)
+library(scales)
 
 # Load data in Shiny
 balance_sheet <- read_csv("https://raw.githubusercontent.com/HassOuss/My_Portfolio/refs/heads/main/Balance_sheet.csv")
@@ -44,7 +44,7 @@ Income_t_clean <- Income_t %>%
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
   mutate(Quick_Ratio = (CurrentAssets - Inventory) / CurrentLiabilities)
 ## Adding Profit Margin to Income Sheet
-Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
+#Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 
 
 ########
@@ -85,14 +85,14 @@ ui <- fluidPage(
   plotOutput("financialPlot"),
   plotOutput("EBITDA_NetIncPlot"),
   plotOutput("TRev_TExPlot"),
-  #plotOutput("revNetIncomePlot")
+  plotOutput("revNetIncomePlot")
 )
 
 #########
 # Define Server
 server <- function(input, output) {
   output$financialPlot <- renderPlot({
-    ggplot(Income_t_clean, aes(x = Year)) +
+    ggplot(Income_t_clean, aes(x = Observation)) +
       geom_line(aes(y = TotalRevenue, color = "Total Revenue"), linewidth = 1) +
       geom_line(aes(y = GrossProfit, color = "Gross Profit"), linewidth = 1) +
       geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
@@ -107,7 +107,7 @@ server <- function(input, output) {
 ## Plot EBITDA & Net Income
 # show company's financial performance
 output$EBITDA_NetIncPlot <- renderPlot({
-  ggplot(Income_t_clean, aes(x = Year)) +
+  ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
   geom_line(aes(y = NetIncome, color = "Net Income"), linewidth = 1) +
   labs(
@@ -161,7 +161,7 @@ output$cashFlowPlot <- renderPlot({
   })
  ############# Revenue Statement
   
-  ## Total Revenue vs Total Expenses
+## Total Revenue vs Total Expenses
 output$TRev_TExPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
@@ -170,6 +170,46 @@ output$TRev_TExPlot <- renderPlot({
     color = "Metric") +
   theme_minimal()
     }) 
+## Step 1: Calculate Profit Margin
+Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
+Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+
+## Step 2: Plot with dual axis + formatting
+output$revNetIncomePlot <- renderPlot({
+  ggplot(Income_t_clean, aes(x = Observation)) +
+    # Bars for Revenue and Net Income (side by side)
+    geom_col(aes(y = TotalRevenue, fill = "Revenue"), 
+             width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
+    geom_col(aes(y = NetIncome, fill = "Net Income"), 
+             width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
+    
+    # Line for Profit Margin (rescaled to align with billions axis)
+    geom_line(aes(y = ProfitMargin * max(c(TotalRevenue, NetIncome)) / 100, 
+                  color = "Profit Margin", group = 1), 
+              linewidth = 1.2) +
+    geom_point(aes(y = ProfitMargin * max(c(TotalRevenue, NetIncome)) / 100, 
+                   color = "Profit Margin"), size = 2) +
+    
+    labs(
+      title = "Revenue & Net Income vs Profit Margin",
+      x = "Observation",
+      y = "Billions ($)",
+      fill = "Bar Metrics",
+      color = "Line Metric"
+    ) +
+    scale_fill_manual(values = c("Revenue" = "steelblue", "Net Income" = "darkgreen")) +
+    scale_color_manual(values = c("Profit Margin" = "firebrick")) +
+    
+    # Format y-axis: primary in billions, secondary as %
+    scale_y_continuous(
+      labels = scales::dollar_format(prefix = "$", suffix = "B"),  
+      sec.axis = sec_axis(~ . * 100 / max(c(Income_t_clean$TotalRevenue, 
+                                            Income_t_clean$NetIncome)),
+                          name = "Profit Margin (%)",
+                          labels = function(x) paste0(round(x, 1), "%"))
+    ) +
+    theme_minimal()
+})
 
 }
 
