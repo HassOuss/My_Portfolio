@@ -167,30 +167,43 @@ output$TRev_TExPlot <- renderPlot({
     color = "Metric") +
   theme_minimal()
     }) 
-  ## Hybrid: Revenue (bars) + Net Income (bars) + Profit Margin (line)
+  
+ ## Step 1: Calculate Profit Margin
+Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / 
+                                         Income_t_clean$Revenue) * 100
 Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+
+## Step 2: Plot with dual axis
 output$revNetIncomePlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
-    # Bars for Revenue and Net Income (side-by-side with position_dodge)
+    # Bars for Revenue and Net Income
     geom_col(aes(y = Revenue, fill = "Revenue"), 
              width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
     geom_col(aes(y = NetIncome, fill = "Net Income"), 
              width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
     
-    # Line for Profit Margin
-    geom_line(aes(y = ProfitMargin, color = "Profit Margin", group = 1), 
+    # Line for Profit Margin (rescaled for secondary axis)
+    geom_line(aes(y = ProfitMargin * max(Revenue, NetIncome) / 100, 
+                  color = "Profit Margin", group = 1), 
               linewidth = 1.2) +
-    geom_point(aes(y = ProfitMargin, color = "Profit Margin"), size = 2) +
-    
+    geom_point(aes(y = ProfitMargin * max(Revenue, NetIncome) / 100, 
+                   color = "Profit Margin"), size = 2) +
     labs(
       title = "Revenue & Net Income vs Profit Margin",
       x = "Observation",
-      y = "Billions",
+      y = "Billions ($)",
       fill = "Bar Metrics",
       color = "Line Metric"
     ) +
     scale_fill_manual(values = c("Revenue" = "steelblue", "Net Income" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
+    
+    # Secondary Y-axis for Profit Margin (%)
+    scale_y_continuous(
+      sec.axis = sec_axis(~ . * 100 / max(Income_t_clean$Revenue, 
+                                          Income_t_clean$NetIncome),
+                          name = "Profit Margin (%)")
+    ) +
     theme_minimal()
 })
 
