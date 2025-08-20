@@ -170,24 +170,23 @@ output$TRev_TExPlot <- renderPlot({
     }) 
 
 ## Step 1: Calculate Profit Margin
-Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / 
-                                         Income_t_clean$Revenue) * 100
+Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$Revenue) * 100
 Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
 
 ## Step 2: Plot with dual axis + formatting
 output$revNetIncomePlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
-    # Bars for Revenue and Net Income
+    # Bars for Revenue and Net Income (side by side)
     geom_col(aes(y = Revenue, fill = "Revenue"), 
              width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
     geom_col(aes(y = NetIncome, fill = "Net Income"), 
              width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
     
-    # Line for Profit Margin (rescaled for secondary axis)
-    geom_line(aes(y = ProfitMargin * max(Revenue, NetIncome) / 100, 
+    # Line for Profit Margin (rescaled to align with billions axis)
+    geom_line(aes(y = ProfitMargin * max(c(Revenue, NetIncome)) / 100, 
                   color = "Profit Margin", group = 1), 
               linewidth = 1.2) +
-    geom_point(aes(y = ProfitMargin * max(Revenue, NetIncome) / 100, 
+    geom_point(aes(y = ProfitMargin * max(c(Revenue, NetIncome)) / 100, 
                    color = "Profit Margin"), size = 2) +
     
     labs(
@@ -200,17 +199,17 @@ output$revNetIncomePlot <- renderPlot({
     scale_fill_manual(values = c("Revenue" = "steelblue", "Net Income" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
     
-    # Primary axis in $billions, Secondary axis in %
+    # Format y-axis: primary in billions, secondary as %
     scale_y_continuous(
-      labels = dollar_format(prefix = "$", suffix = "B"),  # Billions formatting
-      sec.axis = sec_axis(~ . * 100 / max(Income_t_clean$Revenue, 
-                                          Income_t_clean$NetIncome),
+      labels = scales::dollar_format(prefix = "$", suffix = "B"),  
+      sec.axis = sec_axis(~ . * 100 / max(c(Income_t_clean$Revenue, 
+                                            Income_t_clean$NetIncome)),
                           name = "Profit Margin (%)",
                           labels = function(x) paste0(round(x, 1), "%"))
     ) +
     theme_minimal()
 })
-  
+
 }
 
 # Run the app
