@@ -23,7 +23,7 @@ Cash_flow_t <- cash_flow %>%
   pivot_wider(names_from = 1, values_from = Value)
 
 Income_t <- income %>%
-  pivot_longer(cols = -1, names_to = "Year", values_to = "Value") %>%
+  pivot_longer(cols = -1, names_to = "Observation", values_to = "Value") %>%
   pivot_wider(names_from = 1, values_from = Value)
 
 
@@ -36,8 +36,8 @@ Cash_flow_t_clean <- Cash_flow_t %>%
   mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 
 Income_t_clean <- Income_t %>%
-  filter(Year != "ttm") %>% # remove ttm for plotting
-  mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+  filter(Observation != "ttm") %>% # remove ttm for plotting
+  mutate(Year = as.Date(Observation, format = "%m/%d/%Y"))
 
 ## Adding Quick Ratio to Balance Sheet column
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
@@ -81,7 +81,8 @@ ui <- fluidPage(
   h3("Revenue, Gross Profit & EBITDA"),
   plotOutput("financialPlot"),
   plotOutput("EBITDA_NetIncPlot"),
-  plotOutput("TRev_TExPlot")
+  plotOutput("TRev_TExPlot"),
+  plotOutput("revNetIncomePlot")
 )
 
 #########
@@ -114,15 +115,7 @@ output$EBITDA_NetIncPlot <- renderPlot({
   ) +
   theme_minimal()
     }) 
-  ## Total Revenue vs Total Expenses
-output$TRev_TExPlot <- renderPlot({
-  ggplot(Income_t_clean, aes(x = Year)) +
-  geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
-  geom_line(aes(y = TotalExpenses, color = "TotalExpenses"), linewidth = 1) +
-  labs(title = "Revenue vs Expenses",  x = "Date", y = "Billions",
-    color = "Metric") +
-  theme_minimal()
-    }) 
+
 ## Hybrid: Operating Cash Flow (bars) + Free Cash Flow (line)
 Cash_flow_t_clean$Observation <- as.factor(Cash_flow_t_clean$Observation)
 output$cashFlowPlot <- renderPlot({
@@ -146,7 +139,6 @@ output$cashFlowPlot <- renderPlot({
     theme_minimal()
 })
 
-
 ###Quick Ratio  
   output$quickRatioPlot <- renderPlot({
     ggplot(Balance_sheet_t_clean, aes(x = Year, y = Quick_Ratio)) +
@@ -164,6 +156,45 @@ output$cashFlowPlot <- renderPlot({
       ) +
       theme_minimal()
   })
+ ############# Revenue Statement
+  
+  ## Total Revenue vs Total Expenses
+output$TRev_TExPlot <- renderPlot({
+  ggplot(Income_t_clean, aes(x = Observation)) +
+  geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
+  geom_line(aes(y = TotalExpenses, color = "TotalExpenses"), linewidth = 1) +
+  labs(title = "Revenue vs Expenses",  x = "Observation", y = "Billions",
+    color = "Metric") +
+  theme_minimal()
+    }) 
+  ## Hybrid: Revenue (bars) + Net Income (bars) + Profit Margin (line)
+Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+output$revNetIncomePlot <- renderPlot({
+  ggplot(Income_t_clean, aes(x = Observation)) +
+    # Bars for Revenue and Net Income (side-by-side with position_dodge)
+    geom_col(aes(y = Revenue, fill = "Revenue"), 
+             width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
+    geom_col(aes(y = NetIncome, fill = "Net Income"), 
+             width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
+    
+    # Line for Profit Margin
+    geom_line(aes(y = ProfitMargin, color = "Profit Margin", group = 1), 
+              linewidth = 1.2) +
+    geom_point(aes(y = ProfitMargin, color = "Profit Margin"), size = 2) +
+    
+    labs(
+      title = "Revenue & Net Income vs Profit Margin",
+      x = "Observation",
+      y = "Billions",
+      fill = "Bar Metrics",
+      color = "Line Metric"
+    ) +
+    scale_fill_manual(values = c("Revenue" = "steelblue", "Net Income" = "darkgreen")) +
+    scale_color_manual(values = c("Profit Margin" = "firebrick")) +
+    theme_minimal()
+})
+
+  
 }
 
 # Run the app
