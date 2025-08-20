@@ -38,7 +38,7 @@ Cash_flow_t_clean <- Cash_flow_t %>%
 
 Income_t_clean <- Income_t %>%
   filter(Observation != "ttm") %>% # remove ttm for plotting
-  mutate(Year = as.Date(Observation, format = "%m/%d/%Y"))
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 
 ## Adding Quick Ratio to Balance Sheet column
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
