@@ -44,7 +44,7 @@ Income_t_clean <- Income_t %>%
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
   mutate(Quick_Ratio = (CurrentAssets - Inventory) / CurrentLiabilities)
 ## Adding Profit Margin to Income Sheet
-#Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$Revenue) * 100
+Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 
 
 ########
