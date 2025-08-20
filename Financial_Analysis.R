@@ -173,6 +173,8 @@ output$TRev_TExPlot <- renderPlot({
 ## Step 1: Calculate Profit Margin
 Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
+                      max(Income_t_clean$NetIncome, na.rm = TRUE)))
 
 ## Step 2: Plot with dual axis + formatting
 output$revNetIncomePlot <- renderPlot({
@@ -184,8 +186,7 @@ output$revNetIncomePlot <- renderPlot({
              width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
     
     # Line for Profit Margin (rescaled to align with billions axis)
-    geom_line(aes(y = ProfitMargin * max(c(TotalRevenue, NetIncome)) / 100, 
-                  color = "Profit Margin", group = 1), 
+  geom_line(aes(y = ProfitMargin * scale_factor / 100, color = "Profit Margin", group = 1)), 
               linewidth = 1.2) +
     geom_point(aes(y = ProfitMargin * max(c(TotalRevenue, NetIncome)) / 100, 
                    color = "Profit Margin"), size = 2) +
