@@ -6,6 +6,7 @@ library(ggplot2)
 library(skimr)
 library(tidyr)
 library(reshape2)
+library(scales)
 
 # Load data in Shiny
 balance_sheet <- read_csv("https://raw.githubusercontent.com/HassOuss/My_Portfolio/refs/heads/main/Balance_sheet.csv")
@@ -167,13 +168,13 @@ output$TRev_TExPlot <- renderPlot({
     color = "Metric") +
   theme_minimal()
     }) 
-  
- ## Step 1: Calculate Profit Margin
+
+## Step 1: Calculate Profit Margin
 Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / 
                                          Income_t_clean$Revenue) * 100
 Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
 
-## Step 2: Plot with dual axis
+## Step 2: Plot with dual axis + formatting
 output$revNetIncomePlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
     # Bars for Revenue and Net Income
@@ -188,6 +189,7 @@ output$revNetIncomePlot <- renderPlot({
               linewidth = 1.2) +
     geom_point(aes(y = ProfitMargin * max(Revenue, NetIncome) / 100, 
                    color = "Profit Margin"), size = 2) +
+    
     labs(
       title = "Revenue & Net Income vs Profit Margin",
       x = "Observation",
@@ -198,15 +200,16 @@ output$revNetIncomePlot <- renderPlot({
     scale_fill_manual(values = c("Revenue" = "steelblue", "Net Income" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
     
-    # Secondary Y-axis for Profit Margin (%)
+    # Primary axis in $billions, Secondary axis in %
     scale_y_continuous(
+      labels = dollar_format(prefix = "$", suffix = "B"),  # Billions formatting
       sec.axis = sec_axis(~ . * 100 / max(Income_t_clean$Revenue, 
                                           Income_t_clean$NetIncome),
-                          name = "Profit Margin (%)")
+                          name = "Profit Margin (%)",
+                          labels = function(x) paste0(round(x, 1), "%"))
     ) +
     theme_minimal()
 })
-
   
 }
 
