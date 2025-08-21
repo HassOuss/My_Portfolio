@@ -173,6 +173,7 @@ output$TRev_TExPlot <- renderPlot({
 ## Step 1: Calculate Profit Margin
 Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+
 scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
                       max(Income_t_clean$NetIncome, na.rm = TRUE)))
 
@@ -182,26 +183,25 @@ income_long <- Income_t_clean %>%
   pivot_longer(cols = c(TotalRevenue, NetIncome),
                names_to = "Metric", values_to = "Value")
 
-## Step 3: Plot with dual axis + formatting
+## Step 3: Plot
 output$revNetIncomePlot <- renderPlot({
-  ggplot(income_long, aes(x = Observation, y = Value, fill = Metric)) +
-    geom_col(position = position_dodge(width = 0.7), width = 0.6, alpha = 0.8) +
+  ggplot() +
+    # Bars for Revenue & Net Income side by side
+    geom_col(data = income_long,
+             aes(x = Observation, y = Value, fill = Metric),
+             position = position_dodge(width = 0.7), width = 0.6, alpha = 0.8) +
     
-    # Line for Profit Margin (rescaled to align with billions axis)
-    geom_line(
-      data = Income_t_clean,
-      aes(x = Observation, 
-          y = ProfitMargin * scale_factor / 100, 
-          color = "Profit Margin", group = 1),
-      linewidth = 1.2
-    ) +
-    geom_point(
-      data = Income_t_clean,
-      aes(x = Observation, 
-          y = ProfitMargin * scale_factor / 100, 
-          color = "Profit Margin"),
-      size = 2
-    ) +
+    # Profit Margin line
+    geom_line(data = Income_t_clean,
+              aes(x = Observation,
+                  y = ProfitMargin * scale_factor / 100,
+                  color = "Profit Margin", group = 1),
+              linewidth = 1.2) +
+    geom_point(data = Income_t_clean,
+               aes(x = Observation,
+                   y = ProfitMargin * scale_factor / 100,
+                   color = "Profit Margin"),
+               size = 2) +
     
     labs(
       title = "Revenue & Net Income vs Profit Margin",
@@ -210,15 +210,14 @@ output$revNetIncomePlot <- renderPlot({
       fill = "Bar Metrics",
       color = "Line Metric"
     ) +
-    scale_fill_manual(values = c("TotalRevenue" = "steelblue", 
+    scale_fill_manual(values = c("TotalRevenue" = "steelblue",
                                  "NetIncome" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
     
-    # Format y-axis: primary in billions, secondary as %
+    # Format y-axis
     scale_y_continuous(
-      labels = scales::dollar_format(prefix = "$", suffix = "B"),  
-      sec.axis = sec_axis(~ . * 100 / max(c(Income_t_clean$TotalRevenue, 
-                                            Income_t_clean$NetIncome)),
+      labels = scales::dollar_format(prefix = "$", suffix = "B"),
+      sec.axis = sec_axis(~ . * 100 / scale_factor,
                           name = "Profit Margin (%)",
                           labels = function(x) paste0(round(x, 1), "%"))
     ) +
