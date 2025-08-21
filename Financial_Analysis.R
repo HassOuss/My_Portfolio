@@ -91,6 +91,9 @@ ui <- fluidPage(
 #########
 # Define Server
 server <- function(input, output) {
+  Income_t_clean <- Income_t %>%
+  filter(Observation != "ttm") %>%
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
   output$financialPlot <- renderPlot({
     ggplot(Income_t_clean, aes(x = Observation)) +
       geom_line(aes(y = TotalRevenue, color = "Total Revenue"), linewidth = 1) +
@@ -106,6 +109,9 @@ server <- function(input, output) {
   })
 ## Plot EBITDA & Net Income
 # show company's financial performance
+Income_t_clean <- Income_t %>%
+  filter(Observation != "ttm") %>%
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 output$EBITDA_NetIncPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
@@ -162,6 +168,9 @@ output$cashFlowPlot <- renderPlot({
  ############# Revenue Statement
   
 ## Total Revenue vs Total Expenses
+Income_t_clean <- Income_t %>%
+  filter(Observation != "ttm") %>%
+  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 output$TRev_TExPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
