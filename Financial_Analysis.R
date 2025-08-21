@@ -181,13 +181,16 @@ output$TRev_TExPlot <- renderPlot({
     }) 
 ## Step 1: Calculate Profit Margin
 Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
-Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+#Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
+
+Income_t_factor <- Income_t_clean %>%
+  mutate(Observation = factor(format(Observation, "%Y-%m")))
 
 scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
                       max(Income_t_clean$NetIncome, na.rm = TRUE)))
 
 ## Step 2: Reshape for side-by-side bars
-income_long <- Income_t_clean %>%
+income_long <- Income_t_factor %>%
   select(Observation, TotalRevenue, NetIncome, ProfitMargin) %>%
   pivot_longer(cols = c(TotalRevenue, NetIncome),
                names_to = "Metric", values_to = "Value")
@@ -201,12 +204,12 @@ output$revNetIncomePlot <- renderPlot({
              position = position_dodge(width = 0.7), width = 0.6, alpha = 0.8) +
     
     # Profit Margin line
-    geom_line(data = Income_t_clean,
+    geom_line(data = Income_t_factor,
               aes(x = Observation,
                   y = ProfitMargin * scale_factor / 100,
                   color = "Profit Margin", group = 1),
               linewidth = 1.2) +
-    geom_point(data = Income_t_clean,
+    geom_point(data = Income_t_factor,
                aes(x = Observation,
                    y = ProfitMargin * scale_factor / 100,
                    color = "Profit Margin"),
