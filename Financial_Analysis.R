@@ -176,24 +176,32 @@ Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
 scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
                       max(Income_t_clean$NetIncome, na.rm = TRUE)))
 
-## Step 2: Plot with dual axis + formatting
+## Step 2: Reshape for side-by-side bars
+income_long <- Income_t_clean %>%
+  select(Observation, TotalRevenue, NetIncome, ProfitMargin) %>%
+  pivot_longer(cols = c(TotalRevenue, NetIncome),
+               names_to = "Metric", values_to = "Value")
+
+## Step 3: Plot with dual axis + formatting
 output$revNetIncomePlot <- renderPlot({
-  ggplot(Income_t_clean, aes(x = Observation)) +
-    # Bars for Revenue and Net Income (side by side)
-    geom_col(aes(y = TotalRevenue, fill = "Revenue"), 
-             width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
-    geom_col(aes(y = NetIncome, fill = "Net Income"), 
-             width = 0.4, position = position_dodge(width = 0.5), alpha = 0.8) +
+  ggplot(income_long, aes(x = Observation, y = Value, fill = Metric)) +
+    geom_col(position = position_dodge(width = 0.7), width = 0.6, alpha = 0.8) +
     
     # Line for Profit Margin (rescaled to align with billions axis)
- geom_line(
-  aes(y = ProfitMargin * scale_factor / 100, color = "Profit Margin", group = 1),
-  linewidth = 1.2
-) +
-geom_point(
-  aes(y = ProfitMargin * scale_factor / 100, color = "Profit Margin"),
-  size = 2
-) +
+    geom_line(
+      data = Income_t_clean,
+      aes(x = Observation, 
+          y = ProfitMargin * scale_factor / 100, 
+          color = "Profit Margin", group = 1),
+      linewidth = 1.2
+    ) +
+    geom_point(
+      data = Income_t_clean,
+      aes(x = Observation, 
+          y = ProfitMargin * scale_factor / 100, 
+          color = "Profit Margin"),
+      size = 2
+    ) +
     
     labs(
       title = "Revenue & Net Income vs Profit Margin",
@@ -202,7 +210,8 @@ geom_point(
       fill = "Bar Metrics",
       color = "Line Metric"
     ) +
-    scale_fill_manual(values = c("Revenue" = "steelblue", "Net Income" = "darkgreen")) +
+    scale_fill_manual(values = c("TotalRevenue" = "steelblue", 
+                                 "NetIncome" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
     
     # Format y-axis: primary in billions, secondary as %
@@ -215,7 +224,6 @@ geom_point(
     ) +
     theme_minimal()
 })
-
 }
 
 # Run the app
