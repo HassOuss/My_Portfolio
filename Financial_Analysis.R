@@ -30,15 +30,15 @@ Income_t <- income %>%
 
 # Prepare cleaned data
 Balance_sheet_t_clean <- Balance_sheet_t %>%
-  mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+  mutate(Year = as.Date(Year, format = "%m/%Y"))
 
 Cash_flow_t_clean <- Cash_flow_t %>%
   filter(Observation != "ttm") %>% # remove ttm for plotting
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+  mutate(Observation = as.Date(Observation, format = "%m/%Y"))
 
 Income_t_clean <- Income_t %>%
   filter(Observation != "ttm") %>% # remove ttm for plotting
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+  mutate(Observation = as.Date(Observation, format = "%m/%Y"))
 
 ## Adding Quick Ratio to Balance Sheet column
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
@@ -111,7 +111,7 @@ server <- function(input, output) {
 # show company's financial performance
 Income_t_clean <- Income_t %>%
   filter(Observation != "ttm") %>%
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+  mutate(Observation = as.Date(Observation, format = "%m/%Y"))
 output$EBITDA_NetIncPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
@@ -170,7 +170,7 @@ output$cashFlowPlot <- renderPlot({
 ## Total Revenue vs Total Expenses
 Income_t_clean <- Income_t %>%
   filter(Observation != "ttm") %>%
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+  mutate(Observation = as.Date(Observation, format = "%m/%Y"))
 output$TRev_TExPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
