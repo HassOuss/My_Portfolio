@@ -115,7 +115,7 @@ Income_t_clean <- Income_t_clean %>%
     ) +
     
     scale_fill_manual(values = c("CurrentAssets" = "steelblue", "CurrentLiabilities" = "tomato")) +
-    scale_color_manual(values = c("Current Ratio" = "darkgreen")) +
+    scale_color_manual(values = c("CurrentRatio" = "darkgreen")) +
     
     labs(
       title = "Current Assets, Liabilities, and Current Ratio",
