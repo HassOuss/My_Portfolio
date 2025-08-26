@@ -142,9 +142,6 @@ server <- function(input, output) {
 
   
   ###
-  #Income_t_clean <- Income_t %>%
-  #filter(Observation != "ttm") %>%
-  #mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
   output$financialPlot <- renderPlot({
     ggplot(Income_t_clean, aes(x = Observation)) +
       geom_line(aes(y = TotalRevenue, color = "Total Revenue"), linewidth = 1) +
@@ -160,9 +157,6 @@ server <- function(input, output) {
   })
 ## Plot EBITDA & Net Income
 # show company's financial performance
-#Income_t_clean <- Income_t %>%
-  #filter(Observation != "ttm") %>%
-  #mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 
   output$EBITDA_NetIncPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
@@ -220,9 +214,6 @@ output$cashFlowPlot <- renderPlot({
  ############# Revenue Statement
   
 ## Total Revenue vs Total Expenses
-Income_t_clean <- Income_t %>%
-  filter(Observation != "ttm") %>%
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
 output$TRev_TExPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
@@ -232,14 +223,6 @@ output$TRev_TExPlot <- renderPlot({
   theme_minimal()
     }) 
 ## Step 1: Calculate Profit Margin
-Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
-#Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
-
-#Income_t_factor <- Income_t_clean %>%
-  #mutate(Observation = factor(format(Observation, "%Y-%m")))
-
-#scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
-                      #max(Income_t_clean$NetIncome, na.rm = TRUE)))
 
 ## Step 2: Reshape for side-by-side bars
 income_long <- Income_t_factor %>%
