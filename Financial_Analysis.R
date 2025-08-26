@@ -125,8 +125,8 @@ server <- function(input, output) {
     geom_col(aes(y = `CurrentLiabilities`, fill = "CurrentLiabilities"), position = "dodge", width = 0.4) +
     
     # Line for Current Ratio (secondary axis)
-    geom_line(aes(y = CurrentRatio * 100, group = 1, color = "CurrentRatio"), size = 1.2) +
-    geom_point(aes(y = CurrentRatio * 100, color = "CurrentRatio"), size = 2) +
+    geom_line(aes(y = CurrentRatio, group = 1, color = "CurrentRatio"), size = 1.2) +
+    geom_point(aes(y = CurrentRatio, color = "CurrentRatio"), size = 2) +
     
     scale_y_continuous(
       name = "Assets & Liabilities (Billions)",
