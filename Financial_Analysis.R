@@ -51,26 +51,31 @@ Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
 
 ui <- fluidPage(
   titlePanel("Financial Analysis Dashboard"),
-  
-  # Balance Sheet Section
-  h2("Balance Sheet Analysis"),
+
+   # Ratio Analysis Section
+  h2("Ratio Analysis"),
   h3("Quick Ratio"),
   plotOutput("quickRatioPlot"),
   
-  h3("Assets vs Liabilities"),
-  plotOutput("assetsLiabilitiesPlot"),
+  h3("Current Ratio"),
+  plotOutput("currentRatioPlot"),
   
-  tags$hr(),  # horizontal line for separation
-  
-  # Ratio Analysis Section
-  h2("Ratio Analysis"),
   h3("Liquidity Ratios"),
   plotOutput("liquidityRatiosPlot"),
   
   h3("Profitability Ratios"),
   plotOutput("profitabilityRatiosPlot"),
-  
   tags$hr(),
+  
+  # Balance Sheet Section
+  h2("Balance Sheet Analysis"),
+  #h3("Quick Ratio"),
+  #plotOutput("quickRatioPlot"),
+  
+  h3("Assets vs Liabilities"),
+  plotOutput("assetsLiabilitiesPlot"),
+  
+  tags$hr(),  # horizontal line for separation
   
   # Cash Flow Section
   h2("Cash Flow Analysis"),
@@ -91,6 +96,35 @@ ui <- fluidPage(
 #########
 # Define Server
 server <- function(input, output) {
+  Income_t_clean <- Income_t_clean %>%
+  mutate(CurrentRatio = `CurrentAssets` / `CurrentLiabilities`)
+
+output$currentRatioPlot <- renderPlot({
+  ggplot(Income_t_clean, aes(x = Observation)) +
+    # Bars for Assets and Liabilities
+    geom_col(aes(y = `CurrentAssets`, fill = "CurrentAssets"), position = "dodge", width = 0.4) +
+    geom_col(aes(y = `CurrentLiabilities`, fill = "CurrentLiabilities"), position = "dodge", width = 0.4) +
+    
+    # Line for Current Ratio (secondary axis)
+    geom_line(aes(y = CurrentRatio * 100, group = 1, color = "Current Ratio"), size = 1.2) +
+    geom_point(aes(y = CurrentRatio * 100, color = "Current Ratio"), size = 2) +
+    
+    scale_y_continuous(
+      name = "Assets & Liabilities (Billions)",
+      sec.axis = sec_axis(~./100, name = "Current Ratio")
+    ) +
+    
+    scale_fill_manual(values = c("CurrentAssets" = "steelblue", "CurrentLiabilities" = "tomato")) +
+    scale_color_manual(values = c("Current Ratio" = "darkgreen")) +
+    
+    labs(
+      title = "Current Assets, Liabilities, and Current Ratio",
+      x = "Date", fill = "", color = ""
+    ) + theme_minimal()
+})
+
+  
+  
   Income_t_clean <- Income_t %>%
   filter(Observation != "ttm") %>%
   mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
@@ -222,8 +256,7 @@ output$revNetIncomePlot <- renderPlot({
       fill = "Bar Metrics",
       color = "Line Metric"
     ) +
-    scale_fill_manual(values = c("TotalRevenue" = "steelblue",
-                                 "NetIncome" = "darkgreen")) +
+    scale_fill_manual(values = c("TotalRevenue" = "steelblue", "NetIncome" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
     
     # Format y-axis
