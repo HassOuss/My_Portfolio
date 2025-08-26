@@ -47,11 +47,13 @@ Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
 #Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 
 # ==== Data prep (outside server) ====
+Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
+  mutate(CurrentRatio = CurrentAssets / CurrentLiabilities)
+
 Income_t_clean <- Income_t %>%
   filter(Observation != "ttm") %>%
   mutate(
     Observation = as.Date(Observation, format = "%m/%d/%Y"),
-    CurrentRatio = CurrentAssets / CurrentLiabilities,
     ProfitMargin = (NetIncome / TotalRevenue) * 100
   )
 
@@ -117,7 +119,7 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
   output$currentRatioPlot <- renderPlot({
-  ggplot(Income_t_clean, aes(x = Observation)) +
+  ggplot(Balance_sheet_t_clean, aes(x = Observation)) +
     # Bars for Assets and Liabilities
     geom_col(aes(y = `CurrentAssets`, fill = "CurrentAssets"), position = "dodge", width = 0.4) +
     geom_col(aes(y = `CurrentLiabilities`, fill = "CurrentLiabilities"), position = "dodge", width = 0.4) +
