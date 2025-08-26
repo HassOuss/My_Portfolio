@@ -235,11 +235,11 @@ output$TRev_TExPlot <- renderPlot({
 Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 #Income_t_clean$Observation <- as.factor(Income_t_clean$Observation)
 
-Income_t_factor <- Income_t_clean %>%
-  mutate(Observation = factor(format(Observation, "%Y-%m")))
+#Income_t_factor <- Income_t_clean %>%
+  #mutate(Observation = factor(format(Observation, "%Y-%m")))
 
-scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
-                      max(Income_t_clean$NetIncome, na.rm = TRUE)))
+#scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
+                      #max(Income_t_clean$NetIncome, na.rm = TRUE)))
 
 ## Step 2: Reshape for side-by-side bars
 income_long <- Income_t_factor %>%
