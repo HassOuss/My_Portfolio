@@ -46,6 +46,26 @@ Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
 ## Adding Profit Margin to Income Sheet
 #Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 
+# ==== Data prep (outside server) ====
+Income_t_clean <- Income_t %>%
+  filter(Observation != "ttm") %>%
+  mutate(
+    Observation = as.Date(Observation, format = "%m/%d/%Y"),
+    CurrentRatio = CurrentAssets / CurrentLiabilities,
+    ProfitMargin = (NetIncome / TotalRevenue) * 100
+  )
+
+Income_t_factor <- Income_t_clean %>%
+  mutate(Observation = factor(format(Observation, "%Y-%m")))
+
+income_long <- Income_t_factor %>%
+  select(Observation, TotalRevenue, NetIncome, ProfitMargin) %>%
+  pivot_longer(cols = c(TotalRevenue, NetIncome),
+               names_to = "Metric", values_to = "Value")
+
+scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
+                      max(Income_t_clean$NetIncome, na.rm = TRUE)))
+
 
 ########
 
@@ -96,9 +116,6 @@ ui <- fluidPage(
 #########
 # Define Server
 server <- function(input, output) {
-Income_t_clean <- Income_t_clean %>%
-  mutate(CurrentRatio = `CurrentAssets` / `CurrentLiabilities`)
-
   output$currentRatioPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
     # Bars for Assets and Liabilities
@@ -125,9 +142,9 @@ Income_t_clean <- Income_t_clean %>%
 
   
   ###
-  Income_t_clean <- Income_t %>%
-  filter(Observation != "ttm") %>%
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+  #Income_t_clean <- Income_t %>%
+  #filter(Observation != "ttm") %>%
+  #mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
   output$financialPlot <- renderPlot({
     ggplot(Income_t_clean, aes(x = Observation)) +
       geom_line(aes(y = TotalRevenue, color = "Total Revenue"), linewidth = 1) +
@@ -143,10 +160,11 @@ Income_t_clean <- Income_t_clean %>%
   })
 ## Plot EBITDA & Net Income
 # show company's financial performance
-Income_t_clean <- Income_t %>%
-  filter(Observation != "ttm") %>%
-  mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
-output$EBITDA_NetIncPlot <- renderPlot({
+#Income_t_clean <- Income_t %>%
+  #filter(Observation != "ttm") %>%
+  #mutate(Observation = as.Date(Observation, format = "%m/%d/%Y"))
+
+  output$EBITDA_NetIncPlot <- renderPlot({
   ggplot(Income_t_clean, aes(x = Observation)) +
   geom_line(aes(y = EBITDA, color = "EBITDA"), linewidth = 1) +
   geom_line(aes(y = NetIncome, color = "Net Income"), linewidth = 1) +
