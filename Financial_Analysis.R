@@ -119,6 +119,13 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
   output$currentRatioPlot <- renderPlot({
+  
+  # Compute scaling factor (outside ggplot)
+  scale_factor <- max(Balance_sheet_t_clean$CurrentAssets, 
+                      Balance_sheet_t_clean$CurrentLiabilities, 
+                      na.rm = TRUE) / 
+                  max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE)
+  
   ggplot(Balance_sheet_t_clean, aes(x = Observation)) +
     # Bars for Assets and Liabilities
     geom_col(aes(y = CurrentAssets, fill = "CurrentAssets"), 
@@ -126,22 +133,16 @@ server <- function(input, output) {
     geom_col(aes(y = CurrentLiabilities, fill = "CurrentLiabilities"), 
              position = "dodge", width = 0.4) +
     
-    # Line for Current Ratio (scaled to match secondary axis)
-    geom_line(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
-                                max(CurrentRatio, na.rm = TRUE), 
+    # Line for Current Ratio (scaled with factor)
+    geom_line(aes(y = CurrentRatio * scale_factor, 
                   group = 1, color = "CurrentRatio"), size = 1.2) +
-    geom_point(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
-                                 max(CurrentRatio, na.rm = TRUE), 
+    geom_point(aes(y = CurrentRatio * scale_factor, 
                    color = "CurrentRatio"), size = 2) +
     
     # Primary & secondary y-axis
     scale_y_continuous(
       name = "Assets & Liabilities (Billions)",
-      sec.axis = sec_axis(
-        ~ . * max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE) / 
-               max(c(Balance_sheet_t_clean$CurrentAssets, Balance_sheet_t_clean$CurrentLiabilities), na.rm = TRUE),
-        name = "Current Ratio"
-      )
+      sec.axis = sec_axis(~ . / scale_factor, name = "Current Ratio")
     ) +
     
     # Colors
@@ -154,7 +155,6 @@ server <- function(input, output) {
     ) +
     theme_minimal()
 })
-
 
   
   ###
