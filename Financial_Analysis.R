@@ -31,7 +31,7 @@ Income_t <- income %>%
 # Prepare cleaned data
 Balance_sheet_t_clean <- Balance_sheet_t %>% mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
 
-Balance_sheet_t_clean1 <- Balance_sheet_t %>%
+Balance_sheet_t_clean1 <- Balance_sheet_t_clean %>%
   mutate(Year = format(as.Date(Year, format = "%m/%d/%Y"), "%Y")) ## For current Ratio
 
 Cash_flow_t_clean <- Cash_flow_t %>%
