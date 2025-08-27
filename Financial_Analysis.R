@@ -30,7 +30,7 @@ Income_t <- income %>%
 
 # Prepare cleaned data
 Balance_sheet_t_clean <- Balance_sheet_t %>%
-  mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+  mutate(Year = format(as.Date(Year, format = "%m/%d/%Y"), "%Y"))
 
 Cash_flow_t_clean <- Cash_flow_t %>%
   filter(Observation != "ttm") %>% # remove ttm for plotting
@@ -43,8 +43,6 @@ Income_t_clean <- Income_t %>%
 ## Adding Quick Ratio to Balance Sheet column
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
   mutate(Quick_Ratio = (CurrentAssets - Inventory) / CurrentLiabilities)
-## Adding Profit Margin to Income Sheet
-#Income_t_clean$ProfitMargin <- (Income_t_clean$NetIncome / Income_t_clean$TotalRevenue) * 100
 
 # ==== Data prep (outside server) ====
 Balance_sheet_t_clean <- Balance_sheet_t_clean %>%
