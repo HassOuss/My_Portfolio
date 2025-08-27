@@ -29,8 +29,10 @@ Income_t <- income %>%
 
 
 # Prepare cleaned data
-Balance_sheet_t_clean <- Balance_sheet_t %>%
-  mutate(Year = format(as.Date(Year, format = "%m/%d/%Y"), "%Y"))
+Balance_sheet_t_clean <- Balance_sheet_t %>% mutate(Year = as.Date(Year, format = "%m/%d/%Y"))
+
+Balance_sheet_t_clean1 <- Balance_sheet_t %>%
+  mutate(Year = format(as.Date(Year, format = "%m/%d/%Y"), "%Y")) ## For current Ratio
 
 Cash_flow_t_clean <- Cash_flow_t %>%
   filter(Observation != "ttm") %>% # remove ttm for plotting
@@ -117,7 +119,7 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
  output$currentRatioPlot <- renderPlot({
-  ggplot(Balance_sheet_t_clean, aes(x = factor(Year))) +
+  ggplot(Balance_sheet_t_clean1, aes(x = factor(Year))) +
     # Bars for Assets and Liabilities
     geom_col(aes(y = CurrentAssets, fill = "Current Assets"), 
              position = position_dodge(width = 0.9), width = 0.4) +
@@ -136,8 +138,8 @@ server <- function(input, output) {
     scale_y_continuous(
       name = "Assets & Liabilities (Billions)",
       sec.axis = sec_axis(
-        ~ . * max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE) / 
-               max(c(Balance_sheet_t_clean$CurrentAssets, Balance_sheet_t_clean$CurrentLiabilities), na.rm = TRUE),
+        ~ . * max(Balance_sheet_t_clean1$CurrentRatio, na.rm = TRUE) / 
+               max(c(Balance_sheet_t_clean1$CurrentAssets, Balance_sheet_t_clean1$CurrentLiabilities), na.rm = TRUE),
         name = "Current Ratio"
       )
     ) +
