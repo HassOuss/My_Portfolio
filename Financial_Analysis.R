@@ -119,7 +119,7 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
   output$currentRatioPlot <- renderPlot({
-  ggplot(Balance_sheet_t_clean, aes(x = Observation)) +
+  ggplot(Balance_sheet_t_clean, aes(x = Year)) +
     geom_line(aes(y = CurrentRatio, group = 1), color = "darkgreen", size = 1.2) +
     geom_point(aes(y = CurrentRatio), color = "darkgreen", size = 2) +
     labs(title = "Current Ratio (Test Plot)", x = "Date", y = "Current Ratio") +
