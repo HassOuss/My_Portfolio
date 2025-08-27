@@ -119,18 +119,18 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
  output$currentRatioPlot <- renderPlot({
-  ggplot(Balance_sheet_t_clean, aes(x = Year)) +
+  ggplot(Balance_sheet_t_clean, aes(x = factor(Year))) +
     # Bars for Assets and Liabilities
     geom_col(aes(y = CurrentAssets, fill = "Current Assets"), 
-             position = "dodge", width = 0.4) +
+             position = position_dodge(width = 0.9), width = 0.4) +
     geom_col(aes(y = CurrentLiabilities, fill = "Current Liabilities"), 
-             position = "dodge", width = 0.4) +
+             position = position_dodge(width = 0.9), width = 0.4) +
     
-    # Line for Current Ratio (scaled to secondary axis)
-    geom_line(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
+    # Line for Current Ratio (scaled to match secondary axis)
+    geom_line(aes(y = CurrentRatio * max(c(CurrentAssets, CurrentLiabilities), na.rm = TRUE) / 
                                 max(CurrentRatio, na.rm = TRUE), 
                   group = 1, color = "Current Ratio"), size = 1.2) +
-    geom_point(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
+    geom_point(aes(y = CurrentRatio * max(c(CurrentAssets, CurrentLiabilities), na.rm = TRUE) / 
                                  max(CurrentRatio, na.rm = TRUE), 
                    color = "Current Ratio"), size = 2) +
     
