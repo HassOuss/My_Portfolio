@@ -121,26 +121,40 @@ server <- function(input, output) {
   output$currentRatioPlot <- renderPlot({
   ggplot(Balance_sheet_t_clean, aes(x = Observation)) +
     # Bars for Assets and Liabilities
-    geom_col(aes(y = `CurrentAssets`, fill = "CurrentAssets"), position = "dodge", width = 0.4) +
-    geom_col(aes(y = `CurrentLiabilities`, fill = "CurrentLiabilities"), position = "dodge", width = 0.4) +
+    geom_col(aes(y = CurrentAssets, fill = "CurrentAssets"), 
+             position = "dodge", width = 0.4) +
+    geom_col(aes(y = CurrentLiabilities, fill = "CurrentLiabilities"), 
+             position = "dodge", width = 0.4) +
     
-    # Line for Current Ratio (secondary axis)
-    geom_line(aes(y = CurrentRatio, group = 1, color = "CurrentRatio"), size = 1.2) +
-    geom_point(aes(y = CurrentRatio, color = "CurrentRatio"), size = 2) +
+    # Line for Current Ratio (scaled to match secondary axis)
+    geom_line(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
+                                max(CurrentRatio, na.rm = TRUE), 
+                  group = 1, color = "CurrentRatio"), size = 1.2) +
+    geom_point(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
+                                 max(CurrentRatio, na.rm = TRUE), 
+                   color = "CurrentRatio"), size = 2) +
     
+    # Primary & secondary y-axis
     scale_y_continuous(
       name = "Assets & Liabilities (Billions)",
-      sec.axis = sec_axis(~./100, name = "Current Ratio")
+      sec.axis = sec_axis(
+        ~ . * max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE) / 
+               max(c(Balance_sheet_t_clean$CurrentAssets, Balance_sheet_t_clean$CurrentLiabilities), na.rm = TRUE),
+        name = "Current Ratio"
+      )
     ) +
     
+    # Colors
     scale_fill_manual(values = c("CurrentAssets" = "steelblue", "CurrentLiabilities" = "tomato")) +
     scale_color_manual(values = c("CurrentRatio" = "darkgreen")) +
     
     labs(
       title = "Current Assets, Liabilities, and Current Ratio",
       x = "Date", fill = "", color = ""
-    ) + theme_minimal()
+    ) +
+    theme_minimal()
 })
+
 
   
   ###
