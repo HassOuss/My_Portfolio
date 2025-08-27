@@ -119,43 +119,12 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
   output$currentRatioPlot <- renderPlot({
-  
-  # Compute scaling factor (outside ggplot)
-  scale_factor <- max(Balance_sheet_t_clean$CurrentAssets, 
-                      Balance_sheet_t_clean$CurrentLiabilities, 
-                      na.rm = TRUE) / 
-                  max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE)
-  
   ggplot(Balance_sheet_t_clean, aes(x = Observation)) +
-    # Bars for Assets and Liabilities
-    geom_col(aes(y = CurrentAssets, fill = "CurrentAssets"), 
-             position = "dodge", width = 0.4) +
-    geom_col(aes(y = CurrentLiabilities, fill = "CurrentLiabilities"), 
-             position = "dodge", width = 0.4) +
-    
-    # Line for Current Ratio (scaled with factor)
-    geom_line(aes(y = CurrentRatio * scale_factor, 
-                  group = 1, color = "CurrentRatio"), size = 1.2) +
-    geom_point(aes(y = CurrentRatio * scale_factor, 
-                   color = "CurrentRatio"), size = 2) +
-    
-    # Primary & secondary y-axis
-    scale_y_continuous(
-      name = "Assets & Liabilities (Billions)",
-      sec.axis = sec_axis(~ . / scale_factor, name = "Current Ratio")
-    ) +
-    
-    # Colors
-    scale_fill_manual(values = c("CurrentAssets" = "steelblue", "CurrentLiabilities" = "tomato")) +
-    scale_color_manual(values = c("CurrentRatio" = "darkgreen")) +
-    
-    labs(
-      title = "Current Assets, Liabilities, and Current Ratio",
-      x = "Date", fill = "", color = ""
-    ) +
+    geom_line(aes(y = CurrentRatio, group = 1), color = "darkgreen", size = 1.2) +
+    geom_point(aes(y = CurrentRatio), color = "darkgreen", size = 2) +
+    labs(title = "Current Ratio (Test Plot)", x = "Date", y = "Current Ratio") +
     theme_minimal()
 })
-
   
   ###
   output$financialPlot <- renderPlot({
