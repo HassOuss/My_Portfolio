@@ -118,14 +118,43 @@ ui <- fluidPage(
 #########
 # Define Server
 server <- function(input, output) {
-  output$currentRatioPlot <- renderPlot({
+ output$currentRatioPlot <- renderPlot({
   ggplot(Balance_sheet_t_clean, aes(x = Year)) +
-    geom_line(aes(y = CurrentRatio, group = 1), color = "darkgreen", size = 1.2) +
-    geom_point(aes(y = CurrentRatio), color = "darkgreen", size = 2) +
-    labs(title = "Current Ratio (Test Plot)", x = "Date", y = "Current Ratio") +
+    # Bars for Assets and Liabilities
+    geom_col(aes(y = CurrentAssets, fill = "Current Assets"), 
+             position = "dodge", width = 0.4) +
+    geom_col(aes(y = CurrentLiabilities, fill = "Current Liabilities"), 
+             position = "dodge", width = 0.4) +
+    
+    # Line for Current Ratio (scaled to secondary axis)
+    geom_line(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
+                                max(CurrentRatio, na.rm = TRUE), 
+                  group = 1, color = "Current Ratio"), size = 1.2) +
+    geom_point(aes(y = CurrentRatio * max(CurrentAssets, CurrentLiabilities, na.rm = TRUE) / 
+                                 max(CurrentRatio, na.rm = TRUE), 
+                   color = "Current Ratio"), size = 2) +
+    
+    # Primary & secondary y-axis
+    scale_y_continuous(
+      name = "Assets & Liabilities (Billions)",
+      sec.axis = sec_axis(
+        ~ . * max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE) / 
+               max(c(Balance_sheet_t_clean$CurrentAssets, Balance_sheet_t_clean$CurrentLiabilities), na.rm = TRUE),
+        name = "Current Ratio"
+      )
+    ) +
+    
+    # Colors
+    scale_fill_manual(values = c("Current Assets" = "steelblue", "Current Liabilities" = "tomato")) +
+    scale_color_manual(values = c("Current Ratio" = "darkgreen")) +
+    
+    labs(
+      title = "Current Assets, Liabilities, and Current Ratio",
+      x = "Year", fill = "", color = ""
+    ) +
     theme_minimal()
 })
-  
+
   ###
   output$financialPlot <- renderPlot({
     ggplot(Income_t_clean, aes(x = Observation)) +
