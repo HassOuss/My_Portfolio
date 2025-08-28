@@ -82,20 +82,18 @@ ui <- fluidPage(
   h3("Current Ratio"),
   plotOutput("currentRatioPlot"),
   
-  h3("Liquidity Ratios"),
-  plotOutput("liquidityRatiosPlot"),
+  #h3("Liquidity Ratios"),
+  #plotOutput("liquidityRatiosPlot"),
   
-  h3("Profitability Ratios"),
-  plotOutput("profitabilityRatiosPlot"),
+  #h3("Profitability Ratios"),
+  #plotOutput("profitabilityRatiosPlot"),
   tags$hr(),
   
   # Balance Sheet Section
   h2("Balance Sheet Analysis"),
-  #h3("Quick Ratio"),
-  #plotOutput("quickRatioPlot"),
   
-  h3("Assets vs Liabilities"),
-  plotOutput("assetsLiabilitiesPlot"),
+  #h3("Assets vs Liabilities"),
+  #plotOutput("assetsLiabilitiesPlot"),
   
   tags$hr(),  # horizontal line for separation
   
@@ -120,39 +118,32 @@ ui <- fluidPage(
 server <- function(input, output) {
  output$currentRatioPlot <- renderPlot({
   ggplot(Balance_sheet_t_clean, aes(x = factor(Year))) +
-    # Bars for Assets and Liabilities
+    # Assets and Liabilities bar plots
     geom_col(aes(y = CurrentAssets, fill = "Current Assets"), 
              position = position_dodge(width = 0.9), width = 0.4) +
     geom_col(aes(y = CurrentLiabilities, fill = "Current Liabilities"), 
              position = position_dodge(width = 0.9), width = 0.4) +
     
-    # Line for Current Ratio (scaled to match secondary axis)
+    # Current Ratio line plot
     geom_line(aes(y = CurrentRatio * max(c(CurrentAssets, CurrentLiabilities), na.rm = TRUE) / 
                                 max(CurrentRatio, na.rm = TRUE), 
                   group = 1, color = "Current Ratio"), size = 1.2) +
     geom_point(aes(y = CurrentRatio * max(c(CurrentAssets, CurrentLiabilities), na.rm = TRUE) / 
-                                 max(CurrentRatio, na.rm = TRUE), 
-                   color = "Current Ratio"), size = 2) +
+                                 max(CurrentRatio, na.rm = TRUE), color = "Current Ratio"), size = 2) +
     
     # Primary & secondary y-axis
     scale_y_continuous(
-      name = "Assets & Liabilities (Billions)",
-      sec.axis = sec_axis(
+      name = "Assets & Liabilities (Billions)", sec.axis = sec_axis(
         ~ . * max(Balance_sheet_t_clean$CurrentRatio, na.rm = TRUE) / 
                max(c(Balance_sheet_t_clean$CurrentAssets, Balance_sheet_t_clean$CurrentLiabilities), na.rm = TRUE),
-        name = "Current Ratio"
-      )
-    ) +
+        name = "Current Ratio")) +
     
     # Colors
     scale_fill_manual(values = c("Current Assets" = "steelblue", "Current Liabilities" = "tomato")) +
     scale_color_manual(values = c("Current Ratio" = "darkgreen")) +
     
-    labs(
-      title = "Current Assets, Liabilities, and Current Ratio",
-      x = "Year", fill = "", color = ""
-    ) +
-    theme_minimal()
+    labs(title = "Current Assets, Liabilities, and Current Ratio",
+      x = "Year", fill = "", color = "") + theme_minimal()
 })
 
   ###
@@ -196,16 +187,10 @@ output$cashFlowPlot <- renderPlot({
     geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow", group = 1), linewidth = 1.2) +
     geom_point(aes(y = FreeCashFlow, color = "Free Cash Flow"), size = 2) +
     
-    labs(
-      title = "Operating Cash Flow vs Free Cash Flow",
-      x = "Observation",
-      y = "Billions",
-      fill = "Bar Metric",
-      color = "Line Metric"
-    ) +
+    labs(title = "Operating Cash Flow vs Free Cash Flow",
+      x = "Observation", y = "Billions", fill = "Bar Metric", color = "Line Metric") +
     scale_fill_manual(values = c("Operating Cash Flow" = "steelblue")) +
-    scale_color_manual(values = c("Free Cash Flow" = "darkred")) +
-    theme_minimal()
+    scale_color_manual(values = c("Free Cash Flow" = "darkred")) + theme_minimal()
 })
 
 ###Quick Ratio  
@@ -214,16 +199,10 @@ output$cashFlowPlot <- renderPlot({
       geom_line(color = "blue", size = 1) +        
       geom_point(color = "darkred", size = 2) +    
       geom_hline(yintercept = 1, linetype = "dashed", color = "black") + 
-      geom_text(
-        aes(label = round(Quick_Ratio, 2)),   
-        vjust = -0.5, color = "black", size = 3.5
-      ) +  
-      labs(
-        title = "Quick Ratio Over Time",
-        x = "Year",
-        y = "Quick Ratio"
-      ) +
-      theme_minimal()
+      geom_text(aes(label = round(Quick_Ratio, 2)),   
+        vjust = -0.5, color = "black", size = 3.5) +  
+      labs(title = "Quick Ratio Over Time",
+        x = "Year", y = "Quick Ratio") + theme_minimal()
   })
  ############# Revenue Statement
   
@@ -233,8 +212,7 @@ output$TRev_TExPlot <- renderPlot({
   geom_line(aes(y = TotalRevenue, color = "TotalRevenue"), linewidth = 1) +
   geom_line(aes(y = TotalExpenses, color = "TotalExpenses"), linewidth = 1) +
   labs(title = "Revenue vs Expenses",  x = "Observation", y = "Billions",
-    color = "Metric") +
-  theme_minimal()
+    color = "Metric") + theme_minimal()
     }) 
 ## Step 1: Calculate Profit Margin
 
@@ -254,23 +232,15 @@ output$revNetIncomePlot <- renderPlot({
     
     # Profit Margin line
     geom_line(data = Income_t_factor,
-              aes(x = Observation,
-                  y = ProfitMargin * scale_factor / 100,
-                  color = "Profit Margin", group = 1),
-              linewidth = 1.2) +
-    geom_point(data = Income_t_factor,
-               aes(x = Observation,
+              aes(x = Observation, y = ProfitMargin * scale_factor / 100,
+                  color = "Profit Margin", group = 1), linewidth = 1.2) +
+    geom_point(data = Income_t_factor, aes(x = Observation,
                    y = ProfitMargin * scale_factor / 100,
-                   color = "Profit Margin"),
-               size = 2) +
+                   color = "Profit Margin"), size = 2) +
     
-    labs(
-      title = "Revenue & Net Income vs Profit Margin",
-      x = "Observation",
-      y = "Billions ($)",
-      fill = "Bar Metrics",
-      color = "Line Metric"
-    ) +
+    labs(title = "Revenue & Net Income vs Profit Margin",
+      x = "Observation", y = "Billions ($)", fill = "Bar Metrics",
+      color = "Line Metric") +
     scale_fill_manual(values = c("TotalRevenue" = "steelblue", "NetIncome" = "darkgreen")) +
     scale_color_manual(values = c("Profit Margin" = "firebrick")) +
     
@@ -279,9 +249,7 @@ output$revNetIncomePlot <- renderPlot({
       labels = scales::dollar_format(prefix = "$", suffix = "B"),
       sec.axis = sec_axis(~ . * 100 / scale_factor,
                           name = "Profit Margin (%)",
-                          labels = function(x) paste0(round(x, 1), "%"))
-    ) +
-    theme_minimal()
+                          labels = function(x) paste0(round(x, 1), "%"))) + theme_minimal()
 })
 }
 
