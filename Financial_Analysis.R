@@ -271,14 +271,17 @@ output$revNetIncomePlot <- renderPlot({
       sec.axis = sec_axis(~ . * 100 / scale_factor,
                           name = "Profit Margin (%)",
                           labels = function(x) paste0(round(x, 1), "%"))) 
-
-                          
+                           ) +
+    theme_minimal()
+       
 #### Forecast
 # ---- Forecasting Logic ----
 output$forecast_table <- renderTable({
 
   # Revenue time series (annual)
-  rev_ts <- ts(Income_t_clean$TotalRevenue, frequency = 1, start = min(format(Income_t_clean$Observation, "%Y")))
+  #rev_ts <- ts(Income_t_clean$TotalRevenue, frequency = 1, start = min(format(Income_t_clean$Observation, "%Y")))
+  rev_ts <- ts(Income_t_clean$TotalRevenue, frequency = 1,
+             start = as.numeric(min(format(Income_t_clean$Observation, "%Y"))))
   rev_model <- auto.arima(rev_ts)
   rev_forecast <- forecast(rev_model, h = 5)
 
