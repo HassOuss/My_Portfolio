@@ -111,7 +111,7 @@ ui <- fluidPage(
   plotOutput("financialPlot"),
   plotOutput("EBITDA_NetIncPlot"),
   plotOutput("TRev_TExPlot"),
-  plotOutput("revNetIncomePlot")
+  plotOutput("revNetIncomePlot"),
 
 
   #### Forecast
