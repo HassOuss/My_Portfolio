@@ -75,71 +75,63 @@ scale_factor <- max(c(max(Income_t_clean$TotalRevenue, na.rm = TRUE),
 ui <- fluidPage(
   titlePanel("Financial Analysis Dashboard"),
 
-   # Ratio Analysis Section
-  h2("Ratio Analysis"),
-  h3("Quick Ratio"),
-  plotOutput("quickRatioPlot"),
-  
-  h3("Current Ratio"),
-  plotOutput("currentRatioPlot"),
-  
-  #h3("Liquidity Ratios"),
-  #plotOutput("liquidityRatiosPlot"),
-  
-  #h3("Profitability Ratios"),
-  #plotOutput("profitabilityRatiosPlot"),
-  tags$hr(),
-  
-  # Balance Sheet Section
-  h2("Balance Sheet Analysis"),
-  
-  #h3("Assets vs Liabilities"),
-  #plotOutput("assetsLiabilitiesPlot"),
-  
-  tags$hr(),  # horizontal line for separation
-  
-  # Cash Flow Section
-  h2("Cash Flow Analysis"),
-  h3("Operating, Investing & Financing"),
-  plotOutput("cashFlowPlot"),
-  
-  tags$hr(),
-  
-  # Income Statement Section
-  h2("Income Statement"),
-  h3("Revenue, Gross Profit & EBITDA"),
-  plotOutput("financialPlot"),
-  plotOutput("EBITDA_NetIncPlot"),
-  plotOutput("TRev_TExPlot"),
-  plotOutput("revNetIncomePlot"),
-
-
-  #### Forecast
-  tabPanel("Forecasting",
-         sidebarLayout(
-           sidebarPanel(
-             h4("Forecasting Assumptions"),
-             sliderInput("growth", "Revenue Growth Adjustment (%)", 
-                         min = -10, max = 20, value = 5, step = 1),
-             sliderInput("exp_ratio", "Expense Ratio (% of Revenue)", 
-                         min = 50, max = 100, value = 80, step = 1),
-             sliderInput("ni_margin", "Net Income Margin (% of Revenue)", 
-                         min = 0, max = 40, value = 15, step = 1),
-             sliderInput("depr_ratio", "Depreciation (% of Revenue)", 
-                         min = 0, max = 20, value = 10, step = 1),
-             sliderInput("capex_ratio", "CapEx (% of Revenue)", 
-                         min = 0, max = 30, value = 12, step = 1)
-           ),
-           
-           mainPanel(
-             fluidRow(
-               column(6,
-                      h4("Financial Forecast (Annual)"),
-                      tableOutput("forecast_table")
-               ),
-               column(6,
-                      h4("Forecast Plot"),
-                      plotOutput("forecast_plot") ) ) ) ))
+  tabsetPanel(
+    tabPanel("Ratios",
+      h2("Ratio Analysis"),
+      h3("Quick Ratio"),
+      plotOutput("quickRatioPlot"),
+      
+      h3("Current Ratio"),
+      plotOutput("currentRatioPlot"),
+      tags$hr(),
+      
+      h2("Balance Sheet Analysis"),
+      tags$hr(),
+      
+      h2("Cash Flow Analysis"),
+      h3("Operating, Investing & Financing"),
+      plotOutput("cashFlowPlot"),
+      tags$hr(),
+      
+      h2("Income Statement"),
+      h3("Revenue, Gross Profit & EBITDA"),
+      plotOutput("financialPlot"),
+      plotOutput("EBITDA_NetIncPlot"),
+      plotOutput("TRev_TExPlot"),
+      plotOutput("revNetIncomePlot")
+    ),
+    
+    tabPanel("Forecasting",
+      sidebarLayout(
+        sidebarPanel(
+          h4("Forecasting Assumptions"),
+          sliderInput("growth", "Revenue Growth Adjustment (%)", 
+                      min = -10, max = 20, value = 5, step = 1),
+          sliderInput("exp_ratio", "Expense Ratio (% of Revenue)", 
+                      min = 50, max = 100, value = 80, step = 1),
+          sliderInput("ni_margin", "Net Income Margin (% of Revenue)", 
+                      min = 0, max = 40, value = 15, step = 1),
+          sliderInput("depr_ratio", "Depreciation (% of Revenue)", 
+                      min = 0, max = 20, value = 10, step = 1),
+          sliderInput("capex_ratio", "CapEx (% of Revenue)", 
+                      min = 0, max = 30, value = 12, step = 1)
+        ),
+        
+        mainPanel(
+          fluidRow(
+            column(6,
+                   h4("Financial Forecast (Annual)"),
+                   tableOutput("forecast_table")
+            ),
+            column(6,
+                   h4("Forecast Plot"),
+                   plotOutput("forecast_plot")
+            )
+          )
+        )
+      )
+    )
+  )
 )
 
 #########
