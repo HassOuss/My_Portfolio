@@ -111,6 +111,34 @@ ui <- fluidPage(
   plotOutput("EBITDA_NetIncPlot"),
   plotOutput("TRev_TExPlot"),
   plotOutput("revNetIncomePlot")
+
+
+  #### Forecast
+  tabPanel("Forecasting",
+         sidebarLayout(
+           sidebarPanel(
+             h4("Forecasting Assumptions"),
+             sliderInput("growth", "Revenue Growth Adjustment (%)", 
+                         min = -10, max = 20, value = 5, step = 1),
+             sliderInput("exp_ratio", "Expense Ratio (% of Revenue)", 
+                         min = 50, max = 100, value = 80, step = 1),
+             sliderInput("ni_margin", "Net Income Margin (% of Revenue)", 
+                         min = 0, max = 40, value = 15, step = 1),
+             sliderInput("depr_ratio", "Depreciation (% of Revenue)", 
+                         min = 0, max = 20, value = 10, step = 1),
+             sliderInput("capex_ratio", "CapEx (% of Revenue)", 
+                         min = 0, max = 30, value = 12, step = 1)
+           ),
+           
+           mainPanel(
+             fluidRow(
+               column(6,
+                      h4("Financial Forecast (Annual)"),
+                      tableOutput("forecast_table")
+               ),
+               column(6,
+                      h4("Forecast Plot"),
+                      plotOutput("forecast_plot") ) ) ) ))
 )
 
 #########
@@ -249,7 +277,82 @@ output$revNetIncomePlot <- renderPlot({
       labels = scales::dollar_format(prefix = "$", suffix = "B"),
       sec.axis = sec_axis(~ . * 100 / scale_factor,
                           name = "Profit Margin (%)",
-                          labels = function(x) paste0(round(x, 1), "%"))) + theme_minimal()
+                          labels = function(x) paste0(round(x, 1), "%"))) 
+
+                          
+#### Forecast
+# ---- Forecasting Logic ----
+output$forecast_table <- renderTable({
+
+  # Revenue time series (annual)
+  rev_ts <- ts(Income_t_clean$TotalRevenue, frequency = 1, start = min(format(Income_t_clean$Observation, "%Y")))
+  rev_model <- auto.arima(rev_ts)
+  rev_forecast <- forecast(rev_model, h = 5)
+
+  # Apply user growth adjustment
+  adj_factor <- (1 + input$growth / 100)
+  forecast_revenue <- as.numeric(rev_forecast$mean) * adj_factor
+
+  # Expenses & Net Income based on user ratios
+  forecast_expenses <- forecast_revenue * (input$exp_ratio / 100)
+  forecast_net_income <- forecast_revenue * (input$ni_margin / 100)
+
+  # Cash Flow Forecast
+  depr_forecast <- forecast_revenue * (input$depr_ratio / 100)
+  capex_forecast <- forecast_revenue * (input$capex_ratio / 100)
+  fcf_forecast <- forecast_net_income + depr_forecast - capex_forecast
+
+  # Roll-forward Cash Balance
+  last_cash <- tail(Balance_sheet_t_clean$CashAndCashEquivalents, 1)
+  cash_balance_forecast <- last_cash + cumsum(fcf_forecast)
+
+  # Combine into table
+  forecast_table <- data.frame(
+    Year = seq(max(format(Income_t_clean$Observation, "%Y")) + 1, by = 1, length.out = 5),
+    Revenue = round(forecast_revenue, 2),
+    Expenses = round(forecast_expenses, 2),
+    NetIncome = round(forecast_net_income, 2),
+    FreeCashFlow = round(fcf_forecast, 2),
+    CashBalance = round(cash_balance_forecast, 2)
+  )
+
+  forecast_table
+})
+
+# ---- Forecast Plot ----
+output$forecast_plot <- renderPlot({
+  rev_ts <- ts(Income_t_clean$TotalRevenue, frequency = 1, start = min(format(Income_t_clean$Observation, "%Y")))
+  rev_model <- auto.arima(rev_ts)
+  rev_forecast <- forecast(rev_model, h = 5)
+
+  adj_factor <- (1 + input$growth / 100)
+  forecast_revenue <- as.numeric(rev_forecast$mean) * adj_factor
+  forecast_expenses <- forecast_revenue * (input$exp_ratio / 100)
+  forecast_net_income <- forecast_revenue * (input$ni_margin / 100)
+
+  depr_forecast <- forecast_revenue * (input$depr_ratio / 100)
+  capex_forecast <- forecast_revenue * (input$capex_ratio / 100)
+  fcf_forecast <- forecast_net_income + depr_forecast - capex_forecast
+
+  last_cash <- tail(Balance_sheet_t_clean$CashAndCashEquivalents, 1)
+  cash_balance_forecast <- last_cash + cumsum(fcf_forecast)
+
+  forecast_table <- data.frame(
+    Year = seq(max(format(Income_t_clean$Observation, "%Y")) + 1, by = 1, length.out = 5),
+    Revenue = forecast_revenue,
+    NetIncome = forecast_net_income,
+    FreeCashFlow = fcf_forecast,
+    CashBalance = cash_balance_forecast
+  )
+
+  ggplot(forecast_table, aes(x = Year)) +
+    geom_line(aes(y = Revenue, color = "Revenue"), size = 1.2) +
+    geom_line(aes(y = NetIncome, color = "Net Income"), size = 1.2) +
+    geom_line(aes(y = FreeCashFlow, color = "Free Cash Flow"), size = 1.2) +
+    geom_line(aes(y = CashBalance, color = "Cash Balance"), size = 1.2) +
+    labs(title = "Financial Forecast (Annual)",
+         x = "Year", y = "Value", color = "Metric") +
+    theme_minimal()
 })
 }
 
