@@ -301,14 +301,14 @@ output$forecast_table <- renderTable({
 
   # Combine into table
   forecast_table <- data.frame(
-    Year = seq(max(format(Income_t_clean$Observation, "%Y")) + 1, by = 1, length.out = 5),
+    Year = seq(as.numeric(max(format(Income_t_clean$Observation, "%Y"))) + 1, 
+           by = 1, length.out = 5),
     Revenue = round(forecast_revenue, 2),
     Expenses = round(forecast_expenses, 2),
     NetIncome = round(forecast_net_income, 2),
     FreeCashFlow = round(fcf_forecast, 2),
     CashBalance = round(cash_balance_forecast, 2)
   )
-
   forecast_table
 })
 
@@ -331,13 +331,14 @@ output$forecast_plot <- renderPlot({
   cash_balance_forecast <- last_cash + cumsum(fcf_forecast)
 
   forecast_table <- data.frame(
-    Year = seq(max(format(Income_t_clean$Observation, "%Y")) + 1, by = 1, length.out = 5),
+  #Year = seq(max(format(Income_t_clean$Observation, "%Y")) + 1, by = 1, length.out = 5),
+  Year = seq(as.numeric(max(format(Income_t_clean$Observation, "%Y"))) + 1, 
+           by = 1, length.out = 5),
     Revenue = forecast_revenue,
     NetIncome = forecast_net_income,
     FreeCashFlow = fcf_forecast,
     CashBalance = cash_balance_forecast
   )
-
   ggplot(forecast_table, aes(x = Year)) +
     geom_line(aes(y = Revenue, color = "Revenue"), size = 1.2) +
     geom_line(aes(y = NetIncome, color = "Net Income"), size = 1.2) +
