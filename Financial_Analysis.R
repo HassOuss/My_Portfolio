@@ -7,6 +7,7 @@ library(skimr)
 library(tidyr)
 library(reshape2)
 library(scales)
+library(forecast)
 
 # Load data in Shiny
 balance_sheet <- read_csv("https://raw.githubusercontent.com/HassOuss/My_Portfolio/refs/heads/main/Balance_sheet.csv")
