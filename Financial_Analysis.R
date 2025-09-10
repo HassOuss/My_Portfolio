@@ -275,14 +275,16 @@ output$revNetIncomePlot <- renderPlot({
     theme_minimal()
        })
 #### Forecast
-#### Forecast
-# ---- Forecasting Logic ----
 output$forecast_table <- renderTable({
+income_billion <- Income_t_clean %>%
+  mutate(TotalRevenue_Billions = ifelse(Year <= 2001,   # adjust cutoff year
+                                         TotalRevenue / 1000,  # convert millions to billions
+                                         TotalRevenue))        # already in billions
 
   # Revenue time series (annual, log-transformed)
-  rev_ts <- ts(log(Income_t_clean$TotalRevenue),
+  rev_ts <- ts(log(income_billion$TotalRevenue_Billions),
                frequency = 1,
-               start = as.numeric(format(min(Income_t_clean$Observation), "%Y")))
+               start = as.numeric(format(min(income_billion$Observation), "%Y")))
 
   rev_model <- auto.arima(rev_ts)
   rev_forecast <- forecast(rev_model, h = 5)
@@ -306,7 +308,7 @@ output$forecast_table <- renderTable({
 
   # Forecast years
   forecast_years <- seq(
-    max(as.numeric(format(Income_t_clean$Observation, "%Y"))) + 1,
+    max(as.numeric(format(income_billion$Observation, "%Y"))) + 1,
     by = 1, length.out = 5
   )
 
@@ -326,9 +328,9 @@ output$forecast_table <- renderTable({
 # ---- Forecast Plot ----
 output$forecast_plot <- renderPlot({
 
-  rev_ts <- ts(log(Income_t_clean$TotalRevenue),
+  rev_ts <- ts(log(income_billion$TotalRevenue_Billions),
                frequency = 1,
-               start = as.numeric(format(min(Income_t_clean$Observation), "%Y")))
+               start = as.numeric(format(min(income_billion$Observation), "%Y")))
 
   rev_model <- auto.arima(rev_ts)
   rev_forecast <- forecast(rev_model, h = 5)
@@ -346,7 +348,7 @@ output$forecast_plot <- renderPlot({
   cash_balance_forecast <- last_cash + cumsum(fcf_forecast)
 
   forecast_years <- seq(
-    max(as.numeric(format(Income_t_clean$Observation, "%Y"))) + 1,
+    max(as.numeric(format(income_billion$Observation, "%Y"))) + 1,
     by = 1, length.out = 5
   )
 
