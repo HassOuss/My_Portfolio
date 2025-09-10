@@ -277,7 +277,7 @@ output$revNetIncomePlot <- renderPlot({
 #### Forecast
 output$forecast_table <- renderTable({
 income_billion <- Income_t_clean %>%
-  mutate(TotalRevenue_Billions = ifelse(Year <= 2001,   # adjust cutoff year
+  mutate(TotalRevenue_Billions = ifelse(Observation <= 2001,   # adjust cutoff year
                                          TotalRevenue / 1000,  # convert millions to billions
                                          TotalRevenue))        # already in billions
 
